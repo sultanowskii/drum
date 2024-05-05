@@ -1,0 +1,8 @@
+flake8
+flake8-eradicate
+flake8-isort
+flake8-print
+flake8-quotes
+flake8-commas
+flake8-annotations
+mypy

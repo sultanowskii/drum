@@ -1,0 +1,16 @@
+{
+    "flake8.importStrategy": "fromEnvironment",
+    "flake8.interpreter": [
+        ".venv/bin/python"
+    ],
+    "flake8.severity": {
+        "F": "Error",
+        "E": "Error",
+        "W": "Error",
+        "I": "Error"
+    },
+    "mypy-type-checker.interpreter": [
+        ".venv/bin/python"
+    ],
+    "mypy-type-checker.importStrategy": "fromEnvironment"
+}
