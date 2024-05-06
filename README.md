@@ -24,5 +24,5 @@ python install -r requirements
 Translator:
 
 ```bash
-python -m apps.translator.translator INPUT_FILE OUTPUT_FILE
+python drumc.py INPUT_FILE OUTPUT_FILE
 ```

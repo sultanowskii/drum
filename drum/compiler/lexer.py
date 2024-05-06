@@ -2,7 +2,7 @@ import re
 from string import ascii_letters, digits
 from typing import Callable
 
-from apps.translator.tokens import Token, TokenType
+from drum.compiler.tokens import Token, TokenType
 
 # End of file
 EOF = '\0'

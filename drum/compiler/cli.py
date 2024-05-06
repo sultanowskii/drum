@@ -1,12 +1,12 @@
 from sys import argv
 
-from apps.common.files import read_from_file, write_all_to_file
-from apps.translator.lexer import Lexer, lex_top
+from drum.common.files import read_from_file, write_all_to_file
+from drum.compiler.lexer import Lexer, lex_top
 
 
-def main() -> None:
+def cli() -> None:
     if len(argv) != 3:
-        print('Usage: translator.py input_file output_file')
+        print(f'Usage: {argv[0]} input_file output_file')
         exit(1)
 
     input_file = argv[1]
@@ -21,4 +21,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    cli()
