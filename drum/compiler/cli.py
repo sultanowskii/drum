@@ -1,6 +1,6 @@
 from sys import argv
 
-from drum.common.files import read_from_file, write_all_to_file
+from drum.common.util.files import read_from_file, write_all_to_file
 from drum.compiler.lexer import Lexer, lex_top
 
 
