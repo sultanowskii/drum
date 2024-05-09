@@ -8,6 +8,18 @@ RegisterArgument = str
 CommandArgument = ImmediateArgument | RegisterArgument
 
 
+class Register(Enum):
+    """Register."""
+    R0 = 'R0'
+    R1 = 'R1'
+    R2 = 'R2'
+    R3 = 'R3'
+    R4 = 'R4'
+    R5 = 'R5'
+    R6 = 'R6'
+    R7 = 'R7'
+
+
 class ArgsType(Enum):
     """Type of command argument list."""
     ZERO = ''
@@ -57,10 +69,3 @@ class Op(Enum):
     BLE = OpDef('BLE', ArgsType.RRI, _op_iota())
     BGT = OpDef('BGT', ArgsType.RRI, _op_iota())
     BGE = OpDef('BGE', ArgsType.RRI, _op_iota())
-
-
-@dataclass
-class Command:
-    """Command (operation + its arguments)."""
-    op: Op
-    args: list[CommandArgument]

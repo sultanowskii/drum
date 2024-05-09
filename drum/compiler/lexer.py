@@ -155,7 +155,9 @@ def lex_label(lexer: Lexer) -> StateFunction:
     lexer.consume_while_valid(SYMBOLS)
 
     if lexer.next() == ':':
+        lexer.go_back()
         lexer.save_token(TokenType.LABEL)
+        lexer.next()
         return lex_top
 
     return lexer.error('invalid end of label (: expected)')
@@ -191,13 +193,16 @@ def lex_argument_string(lexer: Lexer) -> StateFunction:
     """Lexes string (as instruction argument)."""
     if lexer.next() != '"':
         return lexer.error('invalid start of string (" expected)')
+    lexer.omit()
 
     while True:
         symbol = lexer.next()
         if symbol == EOF:
             break
         if symbol == '"':
+            lexer.go_back()
             lexer.save_token(TokenType.ARGUMENT_STRING)
+            lexer.next()
             break
 
     return lex_argument_comma
@@ -207,6 +212,7 @@ def lex_argument_register(lexer: Lexer) -> StateFunction:
     """Lexes register (as instruction argument)."""
     if lexer.next() != '%':
         return lexer.error('invalid register prefix (%% expected)')
+    lexer.omit()
 
     if lexer.next() not in START_SYMBOLS:
         return lexer.error('invalid symbol while lexing register')
@@ -254,6 +260,38 @@ def lex_instruction(lexer: Lexer) -> StateFunction:
     return lex_argument
 
 
+def lex_literal_string(lexer: Lexer) -> StateFunction:
+    """Lexes string literal."""
+    if lexer.next() != '"':
+        return lexer.error('invalid start of string literal (" expected)')
+    lexer.omit()
+
+    while True:
+        symbol = lexer.next()
+        if symbol == EOF:
+            break
+        if symbol == '"':
+            lexer.go_back()
+            lexer.save_token(TokenType.LITERAL_STRING)
+            lexer.next()
+            break
+
+    return lex_top
+
+
+def lex_literal_number(lexer: Lexer) -> StateFunction:
+    """Lexes number literal."""
+    if lexer.next() != '#':
+        return lexer.error('invalid start of number literal (# expected)')
+    lexer.omit()
+
+    lexer.consume_if_valid(SIGN_SYMBOLS)
+    lexer.consume_while_valid(NUMBER_SYMBOLS)
+    lexer.save_token(TokenType.LITERAL_NUMBER)
+
+    return lex_top
+
+
 def lex_top(lexer: Lexer) -> StateFunction:
     """Top-level lexer part."""
     lexer.skip_while_valid(WHITESPACES_NEWLINES)
@@ -265,6 +303,12 @@ def lex_top(lexer: Lexer) -> StateFunction:
         if LABEL_REGEX.match(lexer.text[lexer.position:]):
             return lex_label
         return lex_instruction
+
+    if lexer.peek() == '"':
+        return lex_literal_string
+
+    if lexer.peek() == '#':
+        return lex_literal_number
 
     if lexer.peek() == EOF:
         return None

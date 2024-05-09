@@ -5,6 +5,8 @@ from enum import Enum
 class TokenType(Enum):
     """Type of lexed token."""
     LABEL = 'Label'
+    LITERAL_STRING = 'String literal'
+    LITERAL_NUMBER = 'Number literal'
     INSTRUCTION = 'Instruction'
     ARGUMENT_NUMBER = 'Number argument'
     ARGUMENT_STRING = 'String argument'
