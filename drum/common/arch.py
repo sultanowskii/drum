@@ -43,6 +43,7 @@ class Op(Enum):
     REM = OpDef('REM', ArgsType.RRR, _op_iota())
     REMI = OpDef('REMI', ArgsType.RRI, _op_iota())
     XOR = OpDef('XOR', ArgsType.RRR, _op_iota())
+    XORI = OpDef('XORI', ArgsType.RRI, _op_iota())
 
     ST = OpDef('ST', ArgsType.RR, _op_iota())
     STI = OpDef('STI', ArgsType.RI, _op_iota())

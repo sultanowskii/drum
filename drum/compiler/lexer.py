@@ -83,6 +83,11 @@ class Lexer:
         self.consume_while_valid(whitelist)
         self.omit()
 
+    def skip_until(self, blacklist: str) -> None:
+        """Skips symbols until they are not in the blacklist."""
+        self.consume_until(blacklist)
+        self.omit()
+
     def peek(self) -> str:
         """Returns the next symbol if possible without consumption."""
         sym = self.next()
@@ -102,6 +107,14 @@ class Lexer:
         """Consumes symbols while they are in the whitelist."""
         sym = self.next()
         while sym in whitelist:
+            sym = self.next()
+
+        self.go_back()
+
+    def consume_until(self, blacklist: str) -> None:
+        """Consumes symbols until they are not in the blacklist."""
+        sym = self.next()
+        while sym is not EOF and sym not in blacklist:
             sym = self.next()
 
         self.go_back()
@@ -126,12 +139,22 @@ class Lexer:
         return f
 
 
+def lex_comment(lexer: Lexer) -> StateFunction:
+    """Lexes comment."""
+    if lexer.next() != ';':
+        return lexer.error('invalid start of comment (; expected)')
+
+    lexer.skip_while_valid(WHITESPACES)
+    lexer.skip_until('\n')
+
+    return lex_top
+
+
 def lex_label(lexer: Lexer) -> StateFunction:
     """Lexes label."""
     lexer.consume_while_valid(SYMBOLS)
 
-    if lexer.peek() == ':':
-        lexer.next()
+    if lexer.next() == ':':
         lexer.save_token(TokenType.LABEL)
         return lex_top
 
@@ -166,10 +189,8 @@ def lex_argument_label(lexer: Lexer) -> StateFunction:
 
 def lex_argument_string(lexer: Lexer) -> StateFunction:
     """Lexes string (as instruction argument)."""
-    if lexer.peek() != '"':
+    if lexer.next() != '"':
         return lexer.error('invalid start of string (" expected)')
-
-    lexer.next()
 
     while True:
         symbol = lexer.next()
@@ -236,6 +257,9 @@ def lex_instruction(lexer: Lexer) -> StateFunction:
 def lex_top(lexer: Lexer) -> StateFunction:
     """Top-level lexer part."""
     lexer.skip_while_valid(WHITESPACES_NEWLINES)
+
+    if lexer.peek() == ';':
+        return lex_comment
 
     if lexer.peek() in START_SYMBOLS:
         if LABEL_REGEX.match(lexer.text[lexer.position:]):

@@ -1,6 +1,6 @@
 # drum
 
-Drum programming language (with its own translator & runtime).
+Drum programming language (with its own "compiler" & "runtime").
 
 An assignment @ ITMO university. Report lives here: [report.md](report.md) (russian).
 
@@ -21,7 +21,7 @@ python install -r requirements
 
 ## Usage
 
-Translator:
+Compiler:
 
 ```bash
 python drumc.py INPUT_FILE OUTPUT_FILE
