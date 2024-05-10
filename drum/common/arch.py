@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from drum.common.util.error import Result
 from drum.common.util.iota import Iota
 
 ImmediateArgument = int
@@ -8,16 +9,42 @@ RegisterArgument = str
 CommandArgument = ImmediateArgument | RegisterArgument
 
 
+_register_iota = Iota()
+
+
+@dataclass
+class RegisterDef:
+    """Register definition."""
+    name: str
+    code: int
+
+
 class Register(Enum):
     """Register."""
-    R0 = 'R0'
-    R1 = 'R1'
-    R2 = 'R2'
-    R3 = 'R3'
-    R4 = 'R4'
-    R5 = 'R5'
-    R6 = 'R6'
-    R7 = 'R7'
+    R0 = RegisterDef('R0', _register_iota())
+    R1 = RegisterDef('R1', _register_iota())
+    R2 = RegisterDef('R2', _register_iota())
+    R3 = RegisterDef('R3', _register_iota())
+    R4 = RegisterDef('R4', _register_iota())
+    R5 = RegisterDef('R5', _register_iota())
+    R6 = RegisterDef('R6', _register_iota())
+    R7 = RegisterDef('R7', _register_iota())
+
+    @staticmethod
+    def get_register_by_name(name: str) -> Result['Register']:
+        """Returns register with provided name. Error if it doesn't exist."""
+        for reg in Register:
+            if reg.value.name == name:
+                return reg, None
+        return Register.R0, f"register with name {name} doesn\'t exist"
+
+    @staticmethod
+    def get_register_by_code(code: int) -> Result['Register']:
+        """Returns register with provided code. Error if it doesn't exist."""
+        for reg in Register:
+            if reg.value.code == code:
+                return reg, None
+        return Register.R0, f"register with code {code} doesn\'t exist"
 
 
 class ArgsType(Enum):

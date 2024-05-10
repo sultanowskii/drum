@@ -1,18 +1,37 @@
+from dataclasses import dataclass
 from typing import Callable
 
-from drum.common.arch import ArgsType, Op
+from drum.common.arch import ArgsType, Op, Register
+from drum.common.util.error import Result
 from drum.compiler.tokens import Token, TokenType
 
 Command = list[int]
 RawCommand = list[int | str]
 Program = list[Command | int]
 RawProgram = list[RawCommand | int]
-END = None
+
+ImmediateArgument = int
+RegisterArgument = str
+LabelReferenceArgument = str
+Argument = ImmediateArgument | RegisterArgument | LabelReferenceArgument
 
 START_LABEL = '_start'
 
 
-def resolve_labels_in_command(raw_command: RawCommand, labels: dict[str, int]) -> Command:
+@dataclass
+class Executable:
+    """Executable representation"""
+    start: int
+    program: Program
+
+
+DUMMY_EXECUTABLE = Executable(0, [])
+
+
+def resolve_labels_in_command(
+    raw_command: RawCommand,
+    labels: dict[str, int],
+) -> Result[Command]:
     """Returns command with resolved label references."""
     command = []
 
@@ -22,25 +41,27 @@ def resolve_labels_in_command(raw_command: RawCommand, labels: dict[str, int]) -
             continue
 
         if line not in labels.keys():
-            print(f'undefined label: {line}')
+            return [], f'undefined label: {line}'
 
         command.append(labels[line])
 
-    return command
+    return command, None
 
 
-def resolve_labels_in_program(raw: RawProgram, labels: dict[str, int]) -> Program:
+def resolve_labels_in_program(raw: RawProgram, labels: dict[str, int]) -> Result[Program]:
     """Resolves all label references in raw program - and returns the resulting one."""
     program: Program = []
 
     for line in raw:
         if isinstance(line, list):
-            command = resolve_labels_in_command(line, labels)
+            command, error = resolve_labels_in_command(line, labels)
+            if error is not None:
+                return program, error
             program.append(command)
         else:
             program.append(line)
 
-    return program
+    return program, None
 
 
 class Translator:
@@ -54,7 +75,7 @@ class Translator:
         self.pos = 0
 
     def next(self) -> Token:
-        """Goes to the next token if possible."""
+        """Goes to the next token, returns current."""
         value = self.tokens[self.pos]
         self.pos += 1
         return value
@@ -63,27 +84,39 @@ class Translator:
         """Goes back by one token."""
         self.pos -= 1
 
+    def is_end(self) -> bool:
+        """Checks if more tokens are available."""
+        return self.pos < len(self.tokens)
+
     def peek(self) -> Token:
-        """Returns the next symbol if possible without consumption."""
+        """Returns the next token without consumption."""
         value = self.next()
         self.go_back()
         return value
 
-    def translate_register_argument(self) -> int | str:
+    def translate_register_argument(self) -> Result[Argument]:
         """Translates register argument."""
-        register = self.next().value
-        return int(register[1])
+        register_name = self.next().value
 
-    def translate_immediate_argument(self) -> int | str:
+        register, error = Register.get_register_by_name(register_name)
+        if error is not None:
+            return 0, f'invalid register: {register_name}'
+
+        return register.value.code, None
+
+    def translate_immediate_argument(self) -> Result[Argument]:
         """Translates immediate argument."""
         token = self.next()
         try:
-            return int(token.value)
+            return int(token.value), None
         except ValueError:
             # label, probably.
-            return token.value
+            return token.value, None
 
-    def get_args_type_translator_list(self, args_type: ArgsType) -> list[Callable[[], int | str]]:
+    def get_args_type_translator_list(
+        self,
+        args_type: ArgsType,
+    ) -> list[Callable[[], Result[Argument]]]:
         """Returns proper list of translators for specific command args type."""
         return {
             ArgsType.ZERO: [],
@@ -107,23 +140,25 @@ class Translator:
             ],
         }[args_type]
 
-    def translate_command(self) -> RawCommand:
+    def translate_command(self) -> Result[RawCommand]:
         """Translates command (op + args)."""
         token = self.next()
 
         normalized_command = token.value.strip().upper()
-
         op = Op[normalized_command].value
 
-        args = [
-            arg_translator()
-            for arg_translator in self.get_args_type_translator_list(op.args_type)
-        ]
+        args = []
+
+        for arg_translator in self.get_args_type_translator_list(op.args_type):
+            arg, error = arg_translator()
+            if error is not None:
+                return [], error
+            args.append(arg)
 
         result: RawCommand = [op.code]
         result += args
 
-        return result
+        return result, None
 
     def translate_string_literal(self) -> list[int]:
         """Translates string literal."""
@@ -142,9 +177,9 @@ class Translator:
         token = self.next()
         return token.value
 
-    def translate(self) -> tuple[list[Command | int], int]:
+    def translate(self) -> Result[Executable]:
         """Returns a program translated from a token list and a program start."""
-        raw_program: list[RawCommand | int] = []
+        raw_program: RawProgram = []
 
         labels: dict[str, int] = dict()
         start = 0
@@ -156,13 +191,15 @@ class Translator:
 
             match token.type:
                 case TokenType.INSTRUCTION:
-                    raw_program.append(self.translate_command())
+                    command, error = self.translate_command()
+                    if error is not None:
+                        return DUMMY_EXECUTABLE, f'command parse error: {error}'
+                    raw_program.append(command)
                 case TokenType.LABEL:
                     label = self.get_label_value()
 
                     if label in labels.keys():
-                        print(f'label redefenition: {label}')
-                        return [], start
+                        return DUMMY_EXECUTABLE, f'label redefenition: {label}'
 
                     labels[label] = len(raw_program)
 
@@ -173,13 +210,14 @@ class Translator:
                 case TokenType.LITERAL_NUMBER:
                     raw_program.append(self.translate_number_literal())
                 case _:
-                    print(f'Unexpected token: {token}')
-                    return [], start
+                    return DUMMY_EXECUTABLE, f'unexpected token: {token}'
 
         if START_LABEL not in labels.keys():
-            print(f'no {START_LABEL} found!')
-            return [], start
+            return DUMMY_EXECUTABLE, f'start label ({START_LABEL}) not found'
 
-        program = resolve_labels_in_program(raw_program, labels)
+        program, error = resolve_labels_in_program(raw_program, labels)
 
-        return program, start
+        if error is not None:
+            return DUMMY_EXECUTABLE, f'label resolution error: {error}'
+
+        return Executable(start, program), None

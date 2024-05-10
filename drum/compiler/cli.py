@@ -23,14 +23,18 @@ def cli() -> None:
         print(token)
 
     translator = Translator(tokens)
-    program, start = translator.translate()
+    exe, error = translator.translate()
+
+    if error is not None:
+        print(error)
+        return
 
     write_to_file(
         output_file,
         dumps(
             dict(
-                start=start,
-                program=program,
+                start=exe.start,
+                program=exe.program,
             ),
             indent=2,
         ),
