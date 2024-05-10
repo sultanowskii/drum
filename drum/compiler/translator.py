@@ -70,8 +70,8 @@ class Translator:
     pos: int
     tokens: list[Token]
 
-    def __init__(self, token_list: list[Token]) -> None:
-        self.tokens = token_list
+    def __init__(self, tokens: list[Token]) -> None:
+        self.tokens = tokens
         self.pos = 0
 
     def next(self) -> Token:
@@ -96,9 +96,13 @@ class Translator:
 
     def translate_register_argument(self) -> Result[Argument]:
         """Translates register argument."""
-        register_name = self.next().value
+        token = self.next()
+        if token.type != TokenType.ARGUMENT_REGISTER:
+            return 0, f'register argument expected, {token.value} found instead ({token.type})'
 
-        register, error = Register.get_register_by_name(register_name)
+        register_name = token.value
+
+        register, error = Register.get_by_name(register_name)
         if error is not None:
             return 0, f'invalid register: {register_name}'
 
@@ -107,11 +111,16 @@ class Translator:
     def translate_immediate_argument(self) -> Result[Argument]:
         """Translates immediate argument."""
         token = self.next()
-        try:
-            return int(token.value), None
-        except ValueError:
-            # label, probably.
-            return token.value, None
+        match token.type:
+            case TokenType.ARGUMENT_NUMBER:
+                try:
+                    return int(token.value), None
+                except ValueError:
+                    return 0, f'invalid immediate argument: {token.value}'
+            case TokenType.ARGUMENT_LABEL:
+                return token.value, None
+            case _:
+                return 0, f'immediate argument expected, {token.value} found instead ({token.type})'
 
     def get_args_type_translator_list(
         self,
@@ -143,34 +152,46 @@ class Translator:
     def translate_command(self) -> Result[RawCommand]:
         """Translates command (op + args)."""
         token = self.next()
+        if token.type != TokenType.INSTRUCTION:
+            return [], f'instruction expected, {token.value} found instead ({token.type})'
 
-        normalized_command = token.value.strip().upper()
-        op = Op[normalized_command].value
+        op, error = Op.get_by_name(token.value)
+        if error is not None:
+            return [], error
+
+        op_def = op.value
 
         args = []
 
-        for arg_translator in self.get_args_type_translator_list(op.args_type):
+        for arg_translator in self.get_args_type_translator_list(op_def.args_type):
             arg, error = arg_translator()
             if error is not None:
                 return [], error
             args.append(arg)
 
-        result: RawCommand = [op.code]
+        result: RawCommand = [op_def.code]
         result += args
 
         return result, None
 
-    def translate_string_literal(self) -> list[int]:
+    def translate_string_literal(self) -> Result[list[int]]:
         """Translates string literal."""
         token = self.next()
+        if token.type != TokenType.LITERAL_STRING:
+            return [], f'string literal expected, {token.value} found instead ({token.type})'
 
-        return [ord(c) for c in token.value]
+        return [ord(c) for c in token.value], None
 
-    def translate_number_literal(self) -> int:
+    def translate_number_literal(self) -> Result[int]:
         """Translates number literal."""
         token = self.next()
+        if token.type != TokenType.LITERAL_NUMBER:
+            return 0, f'number literal expected, {token.value} found instead ({token.type})'
 
-        return int(token.value)
+        try:
+            return int(token.value), None
+        except ValueError:
+            return 0, f'invalid number literal: {token.value}'
 
     def get_label_value(self) -> str:
         """Gets label value."""
@@ -206,11 +227,19 @@ class Translator:
                     if label == START_LABEL:
                         start = labels[label]
                 case TokenType.LITERAL_STRING:
-                    raw_program.extend(self.translate_string_literal())
+                    string, error = self.translate_string_literal()
+                    if error is not None:
+                        return DUMMY_EXECUTABLE, error
+
+                    raw_program.extend(string)
                 case TokenType.LITERAL_NUMBER:
-                    raw_program.append(self.translate_number_literal())
+                    number, error = self.translate_number_literal()
+                    if error is not None:
+                        return DUMMY_EXECUTABLE, error
+
+                    raw_program.append(number)
                 case _:
-                    return DUMMY_EXECUTABLE, f'unexpected token: {token}'
+                    return DUMMY_EXECUTABLE, f'unexpected token on a top-level: {token}'
 
         if START_LABEL not in labels.keys():
             return DUMMY_EXECUTABLE, f'start label ({START_LABEL}) not found'

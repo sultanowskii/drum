@@ -26,3 +26,7 @@ Compiler:
 ```bash
 python drumc.py INPUT_FILE OUTPUT_FILE
 ```
+
+`INPUT_FILE` is of `.dr`
+
+`OUTPUT_FILE` is of `.drc`

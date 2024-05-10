@@ -31,15 +31,18 @@ class Register(Enum):
     R7 = RegisterDef('R7', _register_iota())
 
     @staticmethod
-    def get_register_by_name(name: str) -> Result['Register']:
+    def get_by_name(name: str) -> Result['Register']:
         """Returns register with provided name. Error if it doesn't exist."""
+        sanitized_name = name.upper()
+
         for reg in Register:
-            if reg.value.name == name:
+            if reg.value.name == sanitized_name:
                 return reg, None
+
         return Register.R0, f"register with name {name} doesn\'t exist"
 
     @staticmethod
-    def get_register_by_code(code: int) -> Result['Register']:
+    def get_by_code(code: int) -> Result['Register']:
         """Returns register with provided code. Error if it doesn't exist."""
         for reg in Register:
             if reg.value.code == code:
@@ -96,3 +99,23 @@ class Op(Enum):
     BLE = OpDef('BLE', ArgsType.RRI, _op_iota())
     BGT = OpDef('BGT', ArgsType.RRI, _op_iota())
     BGE = OpDef('BGE', ArgsType.RRI, _op_iota())
+
+    @staticmethod
+    def get_by_name(name: str) -> Result['Op']:
+        """Returns op with provided name. Error if it doesn't exist."""
+        sanitized_name = name.upper()
+
+        for op in Op:
+            if op.value.name == sanitized_name:
+                return op, None
+
+        return Op.NOP, f"op with name {name} doesn\'t exist"
+
+    @staticmethod
+    def get_by_code(code: int) -> Result['Op']:
+        """Returns op with provided code. Error if it doesn't exist."""
+        for op in Op:
+            if op.value.code == code:
+                return op, None
+
+        return Op.NOP, f"op with code {code} doesn\'t exist"

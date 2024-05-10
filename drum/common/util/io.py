@@ -1,3 +1,4 @@
+from sys import stderr
 from typing import Any, Iterable
 
 
@@ -18,3 +19,8 @@ def write_all_to_file(output_file: str, objects: Iterable[Any]) -> None:
     with open(output_file, 'w') as f:
         for obj in objects:
             f.write(f'{obj}\n')
+
+
+def eprint(*args, **kwargs) -> None:  # noqa: ANN002,ANN003
+    """`print()` wrapper that writes to stderr instead."""
+    print(*args, file=stderr, **kwargs)
