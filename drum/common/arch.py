@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from drum.common.util.error import Result
-from drum.common.util.iota import Iota
+from drum.util.error import Result
+from drum.util.iota import Iota
 
 ImmediateArgument = int
 RegisterArgument = str

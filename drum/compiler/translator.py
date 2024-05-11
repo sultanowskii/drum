@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Callable
 
 from drum.common.arch import ArgsType, Op, Register
-from drum.common.util.error import Result
 from drum.compiler.tokens import Token, TokenType
+from drum.util.error import Result
 
 Command = list[int]
 RawCommand = list[int | str]

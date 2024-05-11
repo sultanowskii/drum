@@ -1,10 +1,7 @@
-from json import dumps
 from sys import argv
 
-from drum.common.util.io import eprint, read_from_file, write_to_file
-from drum.compiler.lexer import Lexer, lex_top
-from drum.compiler.tokens import TokenType
-from drum.compiler.translator import Translator
+from drum.compiler.compile import compile
+from drum.util.io import eprint
 
 
 def cli() -> None:
@@ -19,33 +16,10 @@ def cli() -> None:
         eprint("input file and output file shouldn't be equal")
         return
 
-    text = read_from_file(input_file)
-
-    lexer = Lexer(text, lex_top)
-    tokens = lexer.lex()
-
-    for token in tokens:
-        if token.type == TokenType.ERROR:
-            eprint(f'lexer error: {token.value}')
-            return
-
-    translator = Translator(tokens)
-    exe, error = translator.translate()
+    error = compile(input_file, output_file)
 
     if error is not None:
         eprint(error)
-        return
-
-    write_to_file(
-        output_file,
-        dumps(
-            dict(
-                start=exe.start,
-                program=exe.program,
-            ),
-            indent=2,
-        ),
-    )
 
 
 if __name__ == '__main__':
