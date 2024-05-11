@@ -57,6 +57,7 @@ class ArgsType(Enum):
     RRI = 'RRI'
     RR = 'RR'
     RI = 'RI'
+    R = 'R'
 
 
 @dataclass
@@ -73,17 +74,14 @@ _op_iota = Iota()
 class Op(Enum):
     """Operation."""
     NOP = OpDef('NOP', ArgsType.ZERO, _op_iota())
+    HLT = OpDef('HLT', ArgsType.ZERO, _op_iota())
 
     ADD = OpDef('ADD', ArgsType.RRR, _op_iota())
     ADDI = OpDef('ADDI', ArgsType.RRI, _op_iota())
     SUB = OpDef('SUB', ArgsType.RRR, _op_iota())
     SUBI = OpDef('SUBI', ArgsType.RRI, _op_iota())
-    MUL = OpDef('MUL', ArgsType.RRR, _op_iota())
-    MULI = OpDef('MULI', ArgsType.RRI, _op_iota())
-    DIV = OpDef('DIV', ArgsType.RRR, _op_iota())
-    DIVI = OpDef('DIVI', ArgsType.RRI, _op_iota())
-    REM = OpDef('REM', ArgsType.RRR, _op_iota())
-    REMI = OpDef('REMI', ArgsType.RRI, _op_iota())
+    SHR = OpDef('SHR', ArgsType.RRR, _op_iota())
+    SHRI = OpDef('SHRI', ArgsType.RRI, _op_iota())
     XOR = OpDef('XOR', ArgsType.RRR, _op_iota())
     XORI = OpDef('XORI', ArgsType.RRI, _op_iota())
 
@@ -92,6 +90,9 @@ class Op(Enum):
 
     LD = OpDef('LD', ArgsType.RR, _op_iota())
     LDI = OpDef('LDI', ArgsType.RI, _op_iota())
+
+    IN = OpDef('IN', ArgsType.R, _op_iota())
+    OUT = OpDef('OUT', ArgsType.R, _op_iota())
 
     BEQ = OpDef('BEQ', ArgsType.RRI, _op_iota())
     BNE = OpDef('BNE', ArgsType.RRI, _op_iota())

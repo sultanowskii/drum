@@ -147,6 +147,9 @@ class Translator:
                 self.translate_register_argument,
                 self.translate_immediate_argument,
             ],
+            ArgsType.R: [
+                self.translate_register_argument,
+            ],
         }[args_type]
 
     def translate_command(self) -> Result[RawCommand]:

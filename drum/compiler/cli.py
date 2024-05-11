@@ -3,6 +3,7 @@ from sys import argv
 
 from drum.common.util.io import eprint, read_from_file, write_to_file
 from drum.compiler.lexer import Lexer, lex_top
+from drum.compiler.tokens import TokenType
 from drum.compiler.translator import Translator
 
 
@@ -22,6 +23,11 @@ def cli() -> None:
 
     lexer = Lexer(text, lex_top)
     tokens = lexer.lex()
+
+    for token in tokens:
+        if token.type == TokenType.ERROR:
+            eprint(f'lexer error: {token.value}')
+            return
 
     translator = Translator(tokens)
     exe, error = translator.translate()
