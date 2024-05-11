@@ -5,13 +5,13 @@ from drum.compiler.translator import Translator
 from drum.util.error import Error
 
 
-def compile(input_file: str, output_file: str) -> Error:
+def run(src_file: str, output_file: str) -> Error:
     """
-    Compiles code from `input_file` and writes the result ot `output_file`.
+    Compiles code from `src_file` and writes the result to `output_file`.
 
     If error is encountered, prints it and returns immediately.
     """
-    text = read_src(input_file)
+    text = read_src(src_file)
 
     lexer = Lexer(text, lex_top)
     tokens = lexer.lex()
