@@ -4,9 +4,24 @@ from enum import Enum
 from drum.util.error import Result
 from drum.util.iota import Iota
 
+Command = list[int]
+DataWord = list[int]
+Word = Command | DataWord
+Program = list[Word]
+
 ImmediateArgument = int
 RegisterArgument = str
-CommandArgument = ImmediateArgument | RegisterArgument
+LabelReferenceArgument = str
+Argument = ImmediateArgument | RegisterArgument | LabelReferenceArgument
+
+START_LABEL = '_start'
+
+
+@dataclass
+class Executable:
+    """Executable representation"""
+    start: int
+    program: Program
 
 
 _register_iota = Iota()
@@ -73,7 +88,6 @@ _op_iota = Iota()
 
 class Op(Enum):
     """Operation."""
-    NOP = OpDef('NOP', ArgsType.ZERO, _op_iota())
     HLT = OpDef('HLT', ArgsType.ZERO, _op_iota())
 
     ADD = OpDef('ADD', ArgsType.RRR, _op_iota())
@@ -87,7 +101,6 @@ class Op(Enum):
 
     ST = OpDef('ST', ArgsType.RR, _op_iota())
     STI = OpDef('STI', ArgsType.RI, _op_iota())
-
     LD = OpDef('LD', ArgsType.RR, _op_iota())
     LDI = OpDef('LDI', ArgsType.RI, _op_iota())
 
@@ -110,7 +123,7 @@ class Op(Enum):
             if op.value.name == sanitized_name:
                 return op, None
 
-        return Op.NOP, f"op with name {name} doesn\'t exist"
+        return Op.HLT, f"op with name {name} doesn\'t exist"
 
     @staticmethod
     def get_by_code(code: int) -> Result['Op']:
@@ -119,4 +132,49 @@ class Op(Enum):
             if op.value.code == code:
                 return op, None
 
-        return Op.NOP, f"op with code {code} doesn\'t exist"
+        return Op.HLT, f"op with code {code} doesn\'t exist"
+
+
+CALC_RRR_OPS = (
+    Op.ADD,
+    Op.SUB,
+    Op.SHR,
+    Op.XOR,
+)
+
+CALC_RRI_OPS = (
+    Op.ADDI,
+    Op.SUBI,
+    Op.SHRI,
+    Op.XORI,
+)
+
+CALC_OPS = CALC_RRR_OPS + CALC_RRI_OPS
+
+MEMORY_RR_OPS = (
+    Op.ST,
+    Op.LD,
+)
+
+MEMORY_RI_OPS = (
+    Op.STI,
+    Op.LDI,
+)
+
+MEMORY_OPS = MEMORY_RR_OPS + MEMORY_RI_OPS
+
+IO_OPS = (
+    Op.IN,
+    Op.OUT,
+)
+
+BRANCH_OPS = (
+    Op.BEQ,
+    Op.BNE,
+    Op.BLT,
+    Op.BLE,
+    Op.BGT,
+    Op.BGE,
+)
+
+HALT_OP = Op.HLT

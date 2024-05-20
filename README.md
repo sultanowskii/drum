@@ -21,12 +21,24 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Basic
+
+```bash
+./drum.sh SRC_FILE INPUT_FILE
+```
+
+### Separately
+
 Compiler:
 
 ```bash
-python drumc.py INPUT_FILE OUTPUT_FILE
+python drumc.py SRC_FILE COMPILED_FILE
 ```
 
-`INPUT_FILE` is of `.dr`
 
-`OUTPUT_FILE` is of `.drc`
+Machine:
+
+```bash
+python drumr.py COMPILED_FILE INPUT_FILE
+```
+

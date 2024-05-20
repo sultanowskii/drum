@@ -1,28 +1,21 @@
-from dataclasses import dataclass
 from typing import Callable
 
-from drum.common.arch import ArgsType, Op, Register
+from drum.common.arch import (
+    START_LABEL,
+    ArgsType,
+    Argument,
+    Command,
+    DataWord,
+    Executable,
+    Op,
+    Program,
+    Register,
+)
 from drum.compiler.tokens import Token, TokenType
 from drum.util.error import Result
 
-Command = list[int]
 RawCommand = list[int | str]
-Program = list[Command | int]
-RawProgram = list[RawCommand | int]
-
-ImmediateArgument = int
-RegisterArgument = str
-LabelReferenceArgument = str
-Argument = ImmediateArgument | RegisterArgument | LabelReferenceArgument
-
-START_LABEL = '_start'
-
-
-@dataclass
-class Executable:
-    """Executable representation"""
-    start: int
-    program: Program
+RawProgram = list[RawCommand | DataWord]
 
 
 DUMMY_EXECUTABLE = Executable(0, [])
@@ -52,14 +45,14 @@ def resolve_labels_in_program(raw: RawProgram, labels: dict[str, int]) -> Result
     """Resolves all label references in raw program - and returns the resulting one."""
     program: Program = []
 
-    for line in raw:
-        if isinstance(line, list):
-            command, error = resolve_labels_in_command(line, labels)
+    for word in raw:
+        if len(word) == 1:
+            program.append(word)  # type: ignore
+        else:
+            command, error = resolve_labels_in_command(word, labels)  # type: ignore
             if error is not None:
                 return program, error
             program.append(command)
-        else:
-            program.append(line)
 
     return program, None
 
@@ -177,24 +170,24 @@ class Translator:
 
         return result, None
 
-    def translate_string_literal(self) -> Result[list[int]]:
+    def translate_string_literal(self) -> Result[list[DataWord]]:
         """Translates string literal."""
         token = self.next()
         if token.type != TokenType.LITERAL_STRING:
             return [], f'string literal expected, {token.value} found instead ({token.type})'
 
-        return [ord(c) for c in token.value], None
+        return [[ord(c)] for c in token.value] + [[0]], None
 
-    def translate_number_literal(self) -> Result[int]:
+    def translate_number_literal(self) -> Result[list[int]]:
         """Translates number literal."""
         token = self.next()
         if token.type != TokenType.LITERAL_NUMBER:
-            return 0, f'number literal expected, {token.value} found instead ({token.type})'
+            return [0], f'number literal expected, {token.value} found instead ({token.type})'
 
         try:
-            return int(token.value), None
+            return [int(token.value)], None
         except ValueError:
-            return 0, f'invalid number literal: {token.value}'
+            return [0], f'invalid number literal: {token.value}'
 
     def get_label_value(self) -> str:
         """Gets label value."""

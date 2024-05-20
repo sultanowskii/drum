@@ -9,5 +9,5 @@ alg -> asm | risc | neum | hw | instr | binary -> struct | stream | port | cstr 
 Выбранный вариант (с упрощением в синтаксисе)
 
 ```
-asm | risc | neum | hw | instr | binary | stream | port | cstr | prob1 | -
+asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 | -
 ```
