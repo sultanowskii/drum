@@ -309,13 +309,19 @@ class ControlUnit:
         return True
 
 
-def exec_program(program: Program, start_addr: int = 0, input_data: Iterable[int] = list()) -> None:
+def exec_program(
+    program: Program,
+    start_addr: int = 0,
+    input_data: Iterable[int] = list(),
+) -> list[int]:
     data_path = DataPath(len(program) * 100, program, input_data)
     control_unit = ControlUnit(data_path, data_path.memory, start_addr)
 
     while control_unit.decode_and_execute():
         pass
 
-    print('result:')
+    output_data = []
     while not control_unit.data_path.output_buffer.empty():
-        print(control_unit.data_path.output_buffer.get(), end=', ')
+        output_data.append(control_unit.data_path.output_buffer.get())
+
+    return output_data
