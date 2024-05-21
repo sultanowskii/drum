@@ -210,10 +210,10 @@ class ControlUnit:
                 self.data_path.signal_rd(reg1)
                 self.tick_inc()
             case Op.ST:
-                self.data_path.signal_set_data_address(reg1)
+                self.data_path.signal_set_data_address(reg2)
                 self.tick_inc()
 
-                self.data_path.signal_wr(reg2)
+                self.data_path.signal_wr(reg1)
                 self.tick_inc()
 
     def execute_memory_ri_op(self, op: Op, raw_args: list[int]) -> None:
@@ -282,7 +282,11 @@ class ControlUnit:
         raw_opcode = raw[0]
         raw_args = raw[1:]
 
-        op, _err = Op.get_by_code(raw_opcode)
+        op, err = Op.get_by_code(raw_opcode)
+        if err is not None:
+            print(err)
+            return False
+
         print(self.program[self.instruction_counter])
         for k, v in self.data_path.registers.items():
             print(f'{k.value.name}: {v}')
@@ -314,7 +318,7 @@ def exec_program(
     start_addr: int = 0,
     input_data: Iterable[int] = list(),
 ) -> list[int]:
-    data_path = DataPath(len(program) * 100, program, input_data)
+    data_path = DataPath(len(program) * 5, program, input_data)
     control_unit = ControlUnit(data_path, data_path.memory, start_addr)
 
     while control_unit.decode_and_execute():
