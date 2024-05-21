@@ -1,0 +1,27 @@
+S:
+"Hello, world!"
+
+_start:
+; zero = 0
+XOR %R0, %R0, %R0
+; sptr = &S
+LDI %R1, S
+
+; while (sym != '\0')
+LOOP:
+; sym = *sptr
+LD %R2, %R1
+
+; if sym == 0 -> break
+BEQ %R2, %R0, LOOP_END
+
+OUT %R2
+
+; sptr++
+ADDI %R1, %R1, 1
+
+BEQ %R0, %R0, LOOP
+
+LOOP_END:
+
+HLT

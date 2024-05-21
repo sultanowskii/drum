@@ -1,0 +1,77 @@
+NUM:
+#1000
+
+
+_start:
+; result = 0;
+XOR %R0, %R0, %R0
+
+; acc = 0;
+XOR %R1, %R1, %R1
+
+; n = NUM
+XOR %R2, %R2, %R2
+LDA %R2, NUM
+
+LOOP0:
+; while acc < n:
+BGE %R1, %R2, LOOP0_END
+
+;   result = result + acc
+ADD %R0, %R0, %R1
+
+;   acc = acc + 5
+ADDI %R1, %R1, 5
+
+BEQ %R0, %R0, LOOP0
+
+LOOP0_END:
+
+
+; acc = 0;
+XOR %R1, %R1, %R1
+
+LOOP1:
+; while (acc < n)
+BGE %R1, %R2, LOOP1_END
+
+;   result = result + acc
+ADD %R0, %R0, %R1
+
+;   acc = acc + 3
+ADDI %R1, %R1, 3
+
+BEQ %R0, %R0, LOOP1
+
+LOOP1_END:
+
+
+; acc = 0;
+XOR %R1, %R1, %R1
+
+LOOP2:
+; while (acc < n)
+BGE %R1, %R2, LOOP2_END
+
+;   result = result - acc
+SUB %R0, %R0, %R1
+
+;   acc = acc + 15
+ADDI %R1, %R1, 15
+
+BEQ %R0, %R0, LOOP2
+
+LOOP2_END:
+
+
+; print(result)
+
+OUT %R0
+SHRI %R0, %R0, 8
+OUT %R0
+SHRI %R0, %R0, 8
+OUT %R0
+SHRI %R0, %R0, 8
+OUT %R0
+
+HLT
