@@ -100,9 +100,10 @@ class Op(Enum):
     XORI = OpDef('XORI', ArgsType.RRI, _op_iota())
 
     ST = OpDef('ST', ArgsType.RR, _op_iota())
-    STI = OpDef('STI', ArgsType.RI, _op_iota())
+    STA = OpDef('STA', ArgsType.RI, _op_iota())
     LD = OpDef('LD', ArgsType.RR, _op_iota())
     LDI = OpDef('LDI', ArgsType.RI, _op_iota())
+    LDA = OpDef('LDA', ArgsType.RI, _op_iota())
 
     IN = OpDef('IN', ArgsType.R, _op_iota())
     OUT = OpDef('OUT', ArgsType.R, _op_iota())
@@ -157,8 +158,9 @@ MEMORY_RR_OPS = (
 )
 
 MEMORY_RI_OPS = (
-    Op.STI,
+    Op.STA,
     Op.LDI,
+    Op.LDA,
 )
 
 MEMORY_OPS = MEMORY_RR_OPS + MEMORY_RI_OPS

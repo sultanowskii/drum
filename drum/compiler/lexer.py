@@ -24,7 +24,7 @@ WHITESPACES = ' \t'
 WHITESPACES_NEWLINES = WHITESPACES + '\n'
 
 # Label token regex
-LABEL_REGEX = re.compile(rf'^[{START_SYMBOLS}]{{1}}[{SYMBOLS}]+:')
+LABEL_REGEX = re.compile(rf'^[{START_SYMBOLS}]{{1}}[{SYMBOLS}]*:')
 
 
 class Lexer:
