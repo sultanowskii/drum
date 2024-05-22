@@ -17,9 +17,11 @@ _start:
 ; zero = 0
 XOR %R0, %R0, %R0
 ; newline = '\n'
-LDI %R1, 10
+XOR %R1, %R1, %R1
+ADDI %R1, %R1, 10
 ; sptr = &QUESTION
-LDI %R2, QUESTION
+XOR %R2, %R2, %R2
+ADDI %R2, %R2, QUESTION
 
 ; while (sym != '\0')
 LOOP0:
@@ -42,9 +44,11 @@ OUT %R1
 
 
 ; nameptr = &NAME
-LDI %R2, NAME
+XOR %R2, %R2, %R2
+ADDI %R2, %R2, NAME
 ; sym = 1
-LDI %R3, 1
+XOR %R3, %R3, %R3
+ADDI %R3, %R3, 1
 
 ; while (sym != '\0' && sym != '\n')
 LOOP1:
@@ -68,7 +72,8 @@ LOOP1_END:
 ST %R0, %R2
 
 ; sptr = &HELLO
-LDI %R2, HELLO
+XOR %R2, %R2, %R2
+ADDI %R2, %R2, HELLO
 
 ; while (sym != '\0')
 LOOP2:
@@ -89,7 +94,8 @@ LOOP2_END:
 
 
 ; sptr = &NAME
-LDI %R2, NAME
+XOR %R2, %R2, %R2
+ADDI %R2, %R2, NAME
 
 ; while (sym != '\0')
 LOOP3:

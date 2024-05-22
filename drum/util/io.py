@@ -1,4 +1,5 @@
 from sys import stderr
+from typing import Any
 
 
 def read_from_file(file: str) -> str:
@@ -13,6 +14,6 @@ def write_to_file(file: str, text: str) -> None:
         f.write(text)
 
 
-def eprint(*args, **kwargs) -> None:  # noqa: ANN002,ANN003
+def eprint(*args: Any, **kwargs: Any) -> None:  # noqa: ANN401
     """`print()` wrapper that writes to stderr instead."""
     print(*args, file=stderr, **kwargs)

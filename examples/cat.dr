@@ -3,7 +3,8 @@ _start:
 ; zero = 0
 XOR %R0, %R0, %R0
 ; sym = 1
-LDI %R1, 1
+XOR %R1, %R1, %R1
+ADDI %R1, %R1, 1
 
 ; while sym != 0
 LOOP:

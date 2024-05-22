@@ -9,8 +9,6 @@ from drum.common.arch import (
     HALT_OP,
     IO_OPS,
     MEMORY_OPS,
-    MEMORY_RI_OPS,
-    MEMORY_RR_OPS,
     Op,
     Program,
     Register,
@@ -198,7 +196,7 @@ class ControlUnit:
         execute(op, raw_args)
         self.set_instruction_counter()
 
-    def execute_memory_rr_op(self, op: Op, raw_args: list[int]) -> None:
+    def execute_memory_op(self, op: Op, raw_args: list[int]) -> None:
         reg1, _err = Register.get_by_code(raw_args[0])
         reg2, _err = Register.get_by_code(raw_args[1])
 
@@ -216,34 +214,6 @@ class ControlUnit:
                 self.data_path.signal_wr(reg1)
                 self.tick_inc()
 
-    def execute_memory_ri_op(self, op: Op, raw_args: list[int]) -> None:
-        reg, _err = Register.get_by_code(raw_args[0])
-        imm = raw_args[1]
-
-        match op:
-            case Op.LDI:
-                self.data_path.signal_rd_imm(reg, imm)
-                self.tick_inc()
-            case Op.LDA:
-                self.data_path.signal_set_data_address(imm)
-                self.tick_inc()
-
-                self.data_path.signal_rd(reg)
-                self.tick_inc()
-            case Op.STA:
-                self.data_path.signal_set_data_address(imm)
-                self.tick_inc()
-
-                self.data_path.signal_wr(reg)
-                self.tick_inc()
-
-    def execute_memory_op(self, op: Op, raw_args: list[int]) -> None:
-        execute: Callable[[Op, list[int]], None] = self.execute_error
-        if op in MEMORY_RR_OPS:
-            execute = self.execute_memory_rr_op
-        elif op in MEMORY_RI_OPS:
-            execute = self.execute_memory_ri_op
-        execute(op, raw_args)
         self.set_instruction_counter()
 
     def execute_io_op(self, op: Op, raw_args: list[int]) -> None:

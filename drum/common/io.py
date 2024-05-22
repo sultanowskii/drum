@@ -19,4 +19,6 @@ def write_compiled(file: str, compiled: dict[Any, Any]) -> None:
 def read_compiled(file: str) -> dict[Any, Any]:
     """Reads compiled (.drc) file."""
     raw_data = read_from_file(file)
-    return loads(raw_data)
+    data = loads(raw_data)
+    assert isinstance(data, dict)
+    return data
