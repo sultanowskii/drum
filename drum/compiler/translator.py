@@ -136,10 +136,6 @@ class Translator:
                 self.translate_register_argument,
                 self.translate_register_argument,
             ],
-            ArgsType.RI: [
-                self.translate_register_argument,
-                self.translate_immediate_argument,
-            ],
             ArgsType.R: [
                 self.translate_register_argument,
             ],

@@ -71,7 +71,6 @@ class ArgsType(Enum):
     RRR = 'RRR'
     RRI = 'RRI'
     RR = 'RR'
-    RI = 'RI'
     R = 'R'
 
 

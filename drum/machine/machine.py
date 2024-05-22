@@ -1,5 +1,6 @@
+from enum import Enum
 from queue import Queue
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterable
 
 from drum.common.arch import (
     BRANCH_OPS,
@@ -20,10 +21,17 @@ Value = int
 ImmediateValue = int
 
 
+class SelRegValueSource(Enum):
+    ALU_RESULT = 'ALU_RESULT'
+    INPUT = 'INPUT'
+    MEM = 'MEM'
+
+
 class DataPath:
     input_buffer: Queue[int]
     output_buffer: Queue[int]
     data_address: int
+    alu_result: int
     memory: Memory
     memory_capacity: int
     registers: dict[Register, Value]
@@ -40,6 +48,7 @@ class DataPath:
             self.input_buffer.put(item)
         self.output_buffer = Queue()
         self.data_address = 0
+        self.alu_result = 0
         self.memory_capacity = memory_capacity
         self.memory = program + [[0]] * (self.memory_capacity - len(program))
         self.registers = dict((
@@ -60,57 +69,43 @@ class DataPath:
     def _set_reg_value(self, reg: Register, value: int) -> None:
         self.registers[reg] = value
 
+    def _read_from_memory(self) -> int:
+        return self.memory[self.data_address][0]
+
+    def _write_to_memory(self, value: int) -> None:
+        self.memory[self.data_address] = [value]
+
+    def _in(self) -> int:
+        return self.input_buffer.get()
+
+    def _out(self, value: int) -> None:
+        self.output_buffer.put(value)
+
     def truth(self) -> bool:
         return self._truth
 
-    def signal_rd(
+    def signal_latch_data_address(self, sel: Register) -> None:
+        self.data_address = self._reg_value(sel)
+
+    def signal_latch_mem_wr(self, sel_mem_wr_reg: Register) -> None:
+        value = self._reg_value(sel_mem_wr_reg)
+        self._write_to_memory(value)
+
+    def signal_output(self, sel_out_reg: Register) -> None:
+        value = self._reg_value(sel_out_reg) & 0xff
+        self.output_buffer.put(value)
+
+    def signal_latch_alu_result(
         self,
-        destination: Register,
+        alu_ctl: Op,
+        sel_left: Register,
+        sel_right_or_imm: Register | ImmediateValue,
     ) -> None:
-        value = self.memory[self.data_address]
-
-        self._set_reg_value(destination, value[0])
-
-    def signal_rd_imm(
-        self,
-        destination: Register,
-        imm: ImmediateValue,
-    ) -> None:
-        self.registers[destination] = imm
-
-    def signal_wr(
-        self,
-        source: Register,
-    ) -> None:
-        value = self._reg_value(source)
-
-        self.memory[self.data_address] = [value]
-
-    def signal_wr_imm(
-        self,
-        imm: ImmediateValue,
-    ) -> None:
-        self.memory[self.data_address] = [imm]
-
-    def signal_set_data_address(
-        self,
-        new: Register | ImmediateValue,
-    ) -> None:
-        addr = self._reg_value_or_imm(new)
-        self.data_address = addr
-
-    def signal_alu(
-        self,
-        left: Register,
-        right: Register | ImmediateValue,
-        op: Op,
-        destination: Optional[Register] = None,
-    ) -> None:
-        left_value = self._reg_value(left)
-        right_value = self._reg_value_or_imm(right)
+        left_value = self._reg_value(sel_left)
+        right_value = self._reg_value_or_imm(sel_right_or_imm)
         result = 0
 
-        match op:
+        match alu_ctl:
             case Op.ADD | Op.ADDI:
                 result = left_value + right_value
             case Op.SUB | Op.SUBI:
@@ -134,17 +129,32 @@ class DataPath:
             case Op.BGE:
                 self._truth = left_value >= right_value
 
-        if op in CALC_OPS:
-            assert destination is not None
-            self._set_reg_value(destination, result)
+        self.alu_result = result
 
-    def signal_in(self, reg: Register) -> None:
+    def _signal_latch_register_input(self, reg: Register) -> None:
         value = self.input_buffer.get()
         self._set_reg_value(reg, value)
 
-    def signal_out(self, reg: Register) -> None:
-        value = self._reg_value(reg) & 0xff
-        self.output_buffer.put(value)
+    def _signal_latch_register_mem(self, reg: Register) -> None:
+        value = self._read_from_memory()
+        self._set_reg_value(reg, value)
+
+    def _signal_latch_register_alu(self, reg: Register) -> None:
+        value = self.alu_result
+        self._set_reg_value(reg, value)
+
+    def signal_latch_register(
+        self,
+        reg: Register,
+        sel_reg_value_src: SelRegValueSource,
+    ) -> None:
+        match sel_reg_value_src:
+            case SelRegValueSource.ALU_RESULT:
+                self._signal_latch_register_alu(reg)
+            case SelRegValueSource.INPUT:
+                self._signal_latch_register_input(reg)
+            case SelRegValueSource.MEM:
+                self._signal_latch_register_mem(reg)
 
 
 class ControlUnit:
@@ -177,14 +187,20 @@ class ControlUnit:
         destination_reg, _err = Register.get_by_code(raw_args[0])
         left, _err = Register.get_by_code(raw_args[1])
         right, _err = Register.get_by_code(raw_args[2])
-        self.data_path.signal_alu(left, right, op, destination_reg)
+        self.data_path.signal_latch_alu_result(op, left, right)
+        self.tick_inc()
+
+        self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
         self.tick_inc()
 
     def execute_calc_rri_op(self, op: Op, raw_args: list[int]) -> None:
         destination_reg, _err = Register.get_by_code(raw_args[0])
         left, _err = Register.get_by_code(raw_args[1])
         right = raw_args[2]
-        self.data_path.signal_alu(left, right, op, destination_reg)
+        self.data_path.signal_latch_alu_result(op, left, right)
+        self.tick_inc()
+
+        self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
         self.tick_inc()
 
     def execute_calc_op(self, op: Op, raw_args: list[int]) -> None:
@@ -202,16 +218,16 @@ class ControlUnit:
 
         match op:
             case Op.LD:
-                self.data_path.signal_set_data_address(reg2)
+                self.data_path.signal_latch_data_address(reg2)
                 self.tick_inc()
 
-                self.data_path.signal_rd(reg1)
+                self.data_path.signal_latch_register(reg1, SelRegValueSource.MEM)
                 self.tick_inc()
             case Op.ST:
-                self.data_path.signal_set_data_address(reg2)
+                self.data_path.signal_latch_data_address(reg2)
                 self.tick_inc()
 
-                self.data_path.signal_wr(reg1)
+                self.data_path.signal_latch_mem_wr(reg1)
                 self.tick_inc()
 
         self.set_instruction_counter()
@@ -220,10 +236,10 @@ class ControlUnit:
         reg, _err = Register.get_by_code(raw_args[0])
         match op:
             case Op.IN:
-                self.data_path.signal_in(reg)
+                self.data_path.signal_latch_register(reg, SelRegValueSource.INPUT)
                 self.tick_inc()
             case Op.OUT:
-                self.data_path.signal_out(reg)
+                self.data_path.signal_output(reg)
                 self.tick_inc()
         self.set_instruction_counter()
 
@@ -232,7 +248,7 @@ class ControlUnit:
         right, _err = Register.get_by_code(raw_args[1])
         addr = raw_args[2]
 
-        self.data_path.signal_alu(left, right, op)
+        self.data_path.signal_latch_alu_result(op, left, right)
         self.tick_inc()
 
         if self.data_path.truth():
