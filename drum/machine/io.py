@@ -6,6 +6,7 @@ from drum.util.error import Result
 
 
 def _normalize_data_to_alignment(data: list[int], align: int) -> list[int]:
+    """Adds 0s to the end so that its length is divisible by align."""
     tail_len = (align - (len(data) % align)) % align
     tail = [0] * tail_len
     return data + tail
@@ -13,15 +14,18 @@ def _normalize_data_to_alignment(data: list[int], align: int) -> list[int]:
 
 @dataclass
 class OFDef:
+    """Output format defenition."""
     alias: str
     print_output_data: Callable[[list[int]], None]
 
 
 def _print_output_data_as_str(output_data: list[int]) -> None:
+    """Prints output data as string (ASCII)."""
     print(''.join(chr(c) for c in output_data))
 
 
 def _print_output_data_as_ints(output_data: list[int]) -> None:
+    """Prints output data as ints (4-byte numbers)."""
     normalized_output_data = _normalize_data_to_alignment(output_data, 4)
     result = []
 
@@ -35,6 +39,7 @@ def _print_output_data_as_ints(output_data: list[int]) -> None:
 
 
 def _print_output_data_as_hex_ints(output_data: list[int]) -> None:
+    """Prints output data as ints (4-byte numbers) in hex."""
     normalized_output_data = _normalize_data_to_alignment(output_data, 4)
     result = []
 
@@ -48,14 +53,17 @@ def _print_output_data_as_hex_ints(output_data: list[int]) -> None:
 
 
 def _print_output_data_as_bytes(output_data: list[int]) -> None:
+    """Prints output data as bytes (1-byte numbers)."""
     print(', '.join(str(c) for c in output_data))
 
 
 def _print_output_data_as_hex_bytes(output_data: list[int]) -> None:
+    """Prints output data as bytes (1-byte numbers) in hex."""
     print(', '.join(hex(c) for c in output_data))
 
 
 class OutputFormat(Enum):
+    """Machine output format."""
     STR = OFDef('str', _print_output_data_as_str)
     INTS = OFDef('ints', _print_output_data_as_ints)
     HEX_INTS = OFDef('hex-ints', _print_output_data_as_hex_ints)
