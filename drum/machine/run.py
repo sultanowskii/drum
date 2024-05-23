@@ -17,9 +17,7 @@ def run(compiled_file: str, input_file: str, output_format: OutputFormat) -> Err
     program = exe['program']
     start = exe['start']
 
-    output_data = exec_program(program, start, input_data)
-
-    print('Output:')
-    output_format.value.print_output_data(output_data)
+    output = exec_program(program, output_format, start=start, input_data=input_data)
+    print(output)
 
     return None

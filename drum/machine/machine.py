@@ -1,4 +1,5 @@
 from enum import Enum
+from logging import getLogger
 from queue import Queue
 from typing import Callable, Iterable
 
@@ -15,6 +16,11 @@ from drum.common.arch import (
     Register,
     Word,
 )
+from drum.machine.fmt import fmt_instruction
+from drum.machine.io import OutputFormat
+from drum.util.error import Error
+
+logger = getLogger('machine')
 
 Value = int
 ImmediateValue = int
@@ -108,11 +114,13 @@ class DataPath:
         """Latches memory cell with value from register (chosen by selector)."""
         value = self._reg_value(sel_mem_wr_reg)
         self._write_to_memory(value)
+        logger.debug(f'[{self.data_address}] = {value} ({repr(chr(value))})')
 
     def signal_output(self, sel_out_reg: Register) -> None:
         """Sends byte to output from register (chosen by selector)."""
         value = self._reg_value(sel_out_reg) & 0xff
         self.output_buffer.put(value)
+        logger.debug(f'sent to output: {value} ({repr(chr(value))})')
 
     def signal_latch_alu_result(
         self,
@@ -233,21 +241,38 @@ class ControlUnit:
         else:
             self.instruction_pointer = new
 
-    def execute_arithmetic_rrr_op(self, op: Op, raw_args: list[int]) -> None:
+    def execute_arithmetic_rrr_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes arithmetic RRR operation."""
-        destination_reg, _err = Register.get_by_code(raw_args[0])
-        left, _err = Register.get_by_code(raw_args[1])
-        right, _err = Register.get_by_code(raw_args[2])
+        destination_reg, err = Register.get_by_code(raw_args[0])
+        if err is not None:
+            return err
+
+        left, err = Register.get_by_code(raw_args[1])
+        if err is not None:
+            return err
+
+        right, err = Register.get_by_code(raw_args[2])
+        if err is not None:
+            return err
+
         self.data_path.signal_latch_alu_result(op, left, right)
         self.tick_inc()
 
         self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
         self.tick_inc()
 
-    def execute_arithmetic_rri_op(self, op: Op, raw_args: list[int]) -> None:
+        return None
+
+    def execute_arithmetic_rri_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes arithmetic RRI operation."""
-        destination_reg, _err = Register.get_by_code(raw_args[0])
-        left, _err = Register.get_by_code(raw_args[1])
+        destination_reg, err = Register.get_by_code(raw_args[0])
+        if err is not None:
+            return err
+
+        left, err = Register.get_by_code(raw_args[1])
+        if err is not None:
+            return err
+
         right = raw_args[2]
         self.data_path.signal_latch_alu_result(op, left, right)
         self.tick_inc()
@@ -255,20 +280,35 @@ class ControlUnit:
         self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
         self.tick_inc()
 
-    def execute_arithmetic_op(self, op: Op, raw_args: list[int]) -> None:
+        return None
+
+    def execute_arithmetic_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes arithmetic operation."""
-        execute: Callable[[Op, list[int]], None] = self.execute_error
+        execute: Callable[[Op, list[int]], Error] = self.execute_dummy
         if op in CALC_RRR_OPS:
             execute = self.execute_arithmetic_rrr_op
         elif op in CALC_RRI_OPS:
             execute = self.execute_arithmetic_rri_op
-        execute(op, raw_args)
+        else:
+            return 'programming error: no match in execute_arithmetic_op()'
+
+        err = execute(op, raw_args)
+        if err is not None:
+            return err
+
         self.set_instruction_pointer()
 
-    def execute_memory_op(self, op: Op, raw_args: list[int]) -> None:
+        return None
+
+    def execute_memory_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes memory operation."""
-        reg1, _err = Register.get_by_code(raw_args[0])
-        reg2, _err = Register.get_by_code(raw_args[1])
+        reg1, err = Register.get_by_code(raw_args[0])
+        if err is not None:
+            return err
+
+        reg2, err = Register.get_by_code(raw_args[1])
+        if err is not None:
+            return err
 
         match op:
             case Op.LD:
@@ -283,12 +323,19 @@ class ControlUnit:
 
                 self.data_path.signal_latch_mem_wr(reg1)
                 self.tick_inc()
+            case _:
+                return 'programming error: no match in execute_memory_op()'
 
         self.set_instruction_pointer()
 
-    def execute_io_op(self, op: Op, raw_args: list[int]) -> None:
+        return None
+
+    def execute_io_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes IO operation."""
-        reg, _err = Register.get_by_code(raw_args[0])
+        reg, err = Register.get_by_code(raw_args[0])
+        if err is not None:
+            return err
+
         match op:
             case Op.IN:
                 self.data_path.signal_latch_register(reg, SelRegValueSource.INPUT)
@@ -296,12 +343,23 @@ class ControlUnit:
             case Op.OUT:
                 self.data_path.signal_output(reg)
                 self.tick_inc()
+            case _:
+                return 'programming error: no match in execute_io_op()'
+
         self.set_instruction_pointer()
 
-    def execute_branch_op(self, op: Op, raw_args: list[int]) -> None:
+        return None
+
+    def execute_branch_op(self, op: Op, raw_args: list[int]) -> Error:
         """Executes branching operation."""
-        left, _err = Register.get_by_code(raw_args[0])
-        right, _err = Register.get_by_code(raw_args[1])
+        left, err = Register.get_by_code(raw_args[0])
+        if err is not None:
+            return err
+
+        right, err = Register.get_by_code(raw_args[1])
+        if err is not None:
+            return err
+
         addr = raw_args[2]
 
         self.data_path.signal_latch_alu_result(op, left, right)
@@ -309,12 +367,13 @@ class ControlUnit:
 
         if self.data_path.truth():
             self.set_instruction_pointer(addr)
-            return
-        else:
-            self.set_instruction_pointer()
+            return None
 
-    def execute_error(self, _op: Op, _raw_args: list[int]) -> None:
-        print('ERROR!!!')
+        self.set_instruction_pointer()
+        return None
+
+    def execute_dummy(self, _op: Op, _raw_args: list[int]) -> Error:
+        return None
 
     def decode_and_execute(self) -> bool:
         """Decodes and executes instruction."""
@@ -327,18 +386,10 @@ class ControlUnit:
 
         op, err = Op.get_by_code(raw_opcode)
         if err is not None:
-            print(err)
+            logger.error(err)
             return False
 
-        print(self.program[self.instruction_pointer])
-        for k, v in self.data_path.registers.items():
-            print(f'{k.value.name}: {v}')
-        print(f'data_addr={self.data_path.data_address}')
-        print(f'ic={self.instruction_pointer}')
-        print(f'about to do {op.value}')
-        print()
-
-        execute: Callable[[Op, list[int]], None] = self.execute_error
+        execute: Callable[[Op, list[int]], Error] = self.execute_dummy
 
         if op in CALC_OPS:
             execute = self.execute_arithmetic_op
@@ -351,25 +402,58 @@ class ControlUnit:
         elif op == HALT_OP:
             self.tick_inc()
             return False
+        else:
+            logger.fatal('programming error: unexpected valid op')
+            return False
 
-        execute(op, raw_args)
+        err = execute(op, raw_args)
+        if err is not None:
+            logger.error(err)
+            return False
+
         return True
+
+    def get_state_string(self) -> str:
+        """Returns current state in string format."""
+        s = f'IP={self.instruction_pointer:3} '
+        s += f'ADDR={self.data_path.data_address:3} '
+        s += f'MEM={self.data_path._read_from_memory():6} '
+
+        for reg, value in self.data_path.registers.items():
+            s += f'{reg.value.name}={value:4} '
+
+        instr = self.program[self.instruction_pointer]
+
+        formatted_instruction, err = fmt_instruction(instr)
+        if err is not None:
+            logger.error('error while preparing state string: ' + err)
+
+        s += formatted_instruction
+
+        return s
 
 
 def exec_program(
     program: Program,
-    start_addr: int = 0,
+    output_format: OutputFormat,
+    start: int = 0,
     input_data: Iterable[int] = list(),
-) -> list[int]:
-    """Executes a program."""
+) -> str:
+    """Executes a program. Returns formatted output."""
     data_path = DataPath(len(program) * 5, program, input_data)
-    control_unit = ControlUnit(data_path, data_path.memory, start_addr)
+    control_unit = ControlUnit(data_path, data_path.memory, start)
+
+    logger.debug(control_unit.get_state_string())
 
     while control_unit.decode_and_execute():
-        pass
+        logger.debug(control_unit.get_state_string())
 
     output_data = []
     while not control_unit.data_path.output_buffer.empty():
         output_data.append(control_unit.data_path.output_buffer.get())
 
-    return output_data
+    formatted_output = output_format.value.fmt_output_data(output_data)
+
+    logger.info(f'Output: {formatted_output}')
+
+    return formatted_output

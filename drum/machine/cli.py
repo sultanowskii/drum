@@ -1,31 +1,60 @@
-from sys import argv
+from argparse import ArgumentParser
 
 from drum.machine.io import OutputFormat
 from drum.machine.run import run
 from drum.util.io import eprint
+from drum.util.log import setup_logger
+
+
+def get_parser() -> ArgumentParser:
+    parser = ArgumentParser()
+
+    parser.add_argument(
+        'compiled_file',
+        type=str,
+        help='Compiled (.drc) file',
+    )
+    parser.add_argument(
+        'input_file',
+        type=str,
+        help='Input data file',
+    )
+    parser.add_argument(
+        '-O',
+        '--output-format',
+        type=str,
+        choices=[of.value.alias for of in OutputFormat],
+        default=OutputFormat.STR.value.alias,
+        help='Output data format',
+    )
+    parser.add_argument(
+        '-L',
+        '--logfile',
+        type=str,
+        default=None,
+        help='Output data format',
+    )
+
+    return parser
 
 
 def cli() -> None:
-    if len(argv) < 3:
-        print(f'usage: {argv[0]} compiled_file[.drc] input_file [output_format]')
+    parser = get_parser()
+
+    args = parser.parse_args()
+
+    compiled_file = args.compiled_file
+    input_file = args.input_file
+
+    output_format_raw = args.output_format
+    output_format, err = OutputFormat.get_by_alias(output_format_raw)
+    if err is not None:
+        eprint('invalid output format')
         return
 
-    compiled_file = argv[1].strip()
-    input_file = argv[2].strip()
+    logfile = args.logfile
 
-    output_format = OutputFormat.STR
-
-    if len(argv) >= 4:
-        output_format_alias = argv[3].strip()
-
-        output_format, err = OutputFormat.get_by_alias(output_format_alias)
-        if err is not None:
-            print(err)
-            print(
-                'valid values for output_format:',
-                ' | '.join((of.value.alias for of in OutputFormat)),
-            )
-            return
+    setup_logger('machine', logfile=logfile)
 
     error = run(compiled_file, input_file, output_format)
 
