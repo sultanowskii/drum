@@ -9,7 +9,7 @@ HELLO:
 "Hello, "
 
 EXCLAMATION:
-""
+"!"
 
 
 _start:
@@ -93,7 +93,7 @@ BEQ %R0, %R0, LOOP2
 LOOP2_END:
 
 
-; sptr = &NAME
+; print(name)
 XOR %R2, %R2, %R2
 ADDI %R2, %R2, NAME
 
@@ -113,6 +113,13 @@ ADDI %R2, %R2, 1
 BEQ %R0, %R0, LOOP3
 
 LOOP3_END:
+
+; print('!')
+XOR %R2, %R2, %R2
+ADDI %R2, %R2, EXCLAMATION
+LD %R3, %R2
+OUT %R3
+
 HLT
 
 NAME:

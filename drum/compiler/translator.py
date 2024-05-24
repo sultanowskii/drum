@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Callable
 
 from drum.common.arch import (
@@ -18,7 +19,15 @@ RawCommand = list[int | str]
 RawProgram = list[RawCommand | DataWord]
 
 
+@dataclass
+class TranslationResult:
+    """Translation result."""
+    exe: Executable
+    instruction_count: int
+
+
 DUMMY_EXECUTABLE = Executable(0, [])
+DUMMY_TRANSLATION_RESULT = TranslationResult(DUMMY_EXECUTABLE, 0)
 
 
 def resolve_labels_in_command(
@@ -190,7 +199,7 @@ class Translator:
         token = self.next()
         return token.value
 
-    def translate(self) -> Result[Executable]:
+    def translate(self) -> Result[TranslationResult]:
         """Returns a program translated from a token list and a program start."""
         raw_program: RawProgram = []
 
@@ -199,6 +208,8 @@ class Translator:
 
         token = self.peek()
 
+        instruction_count = 0
+
         while self.pos < len(self.tokens):
             token = self.peek()
 
@@ -206,13 +217,14 @@ class Translator:
                 case TokenType.INSTRUCTION:
                     command, error = self.translate_command()
                     if error is not None:
-                        return DUMMY_EXECUTABLE, f'command parse error: {error}'
+                        return DUMMY_TRANSLATION_RESULT, f'command parse error: {error}'
                     raw_program.append(command)
+                    instruction_count += 1
                 case TokenType.LABEL:
                     label = self.get_label_value()
 
                     if label in labels.keys():
-                        return DUMMY_EXECUTABLE, f'label redefenition: {label}'
+                        return DUMMY_TRANSLATION_RESULT, f'label redefenition: {label}'
 
                     labels[label] = len(raw_program)
 
@@ -221,24 +233,30 @@ class Translator:
                 case TokenType.LITERAL_STRING:
                     string, error = self.translate_string_literal()
                     if error is not None:
-                        return DUMMY_EXECUTABLE, error
+                        return DUMMY_TRANSLATION_RESULT, error
 
                     raw_program.extend(string)
                 case TokenType.LITERAL_NUMBER:
                     number, error = self.translate_number_literal()
                     if error is not None:
-                        return DUMMY_EXECUTABLE, error
+                        return DUMMY_TRANSLATION_RESULT, error
 
                     raw_program.append(number)
                 case _:
-                    return DUMMY_EXECUTABLE, f'unexpected token on a top-level: {token}'
+                    return DUMMY_TRANSLATION_RESULT, f'unexpected token on a top-level: {token}'
 
         if START_LABEL not in labels.keys():
-            return DUMMY_EXECUTABLE, f'start label ({START_LABEL}) not found'
+            return DUMMY_TRANSLATION_RESULT, f'start label ({START_LABEL}) not found'
 
         program, error = resolve_labels_in_program(raw_program, labels)
 
         if error is not None:
-            return DUMMY_EXECUTABLE, f'label resolution error: {error}'
+            return DUMMY_TRANSLATION_RESULT, f'label resolution error: {error}'
 
-        return Executable(start, program), None
+        return (
+            TranslationResult(
+                Executable(start, program),
+                instruction_count,
+            ),
+            None,
+        )

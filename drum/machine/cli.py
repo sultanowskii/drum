@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 from drum.machine.io import OutputFormat
 from drum.machine.run import run
 from drum.util.io import eprint
-from drum.util.log import setup_logger
 
 
 def get_parser() -> ArgumentParser:
@@ -54,9 +53,7 @@ def cli() -> None:
 
     logfile = args.logfile
 
-    setup_logger('machine', logfile=logfile)
-
-    error = run(compiled_file, input_file, output_format)
+    error = run(compiled_file, input_file, output_format, logfile)
 
     if error is not None:
         eprint(error)

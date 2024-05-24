@@ -1,0 +1,203 @@
+in_source_code: |
+  _start:
+  XOR %R0, %R0, %R0
+
+  XOR %R1, %R1, %R1
+
+  XOR %R2, %R2, %R2
+  ADDI %R2, %R2, 1000
+
+  LOOP0:
+  BGE %R1, %R2, LOOP0_END
+  ADD %R0, %R0, %R1
+  ADDI %R1, %R1, 5
+  BEQ %R0, %R0, LOOP0
+  LOOP0_END:
+
+  XOR %R1, %R1, %R1
+
+  LOOP1:
+  BGE %R1, %R2, LOOP1_END
+  ADD %R0, %R0, %R1
+  ADDI %R1, %R1, 3
+  BEQ %R0, %R0, LOOP1
+  LOOP1_END:
+
+  XOR %R1, %R1, %R1
+
+  LOOP2:
+  BGE %R1, %R2, LOOP2_END
+  SUB %R0, %R0, %R1
+  ADDI %R1, %R1, 15
+  BEQ %R0, %R0, LOOP2
+  LOOP2_END:
+
+  OUT %R0
+  SHRI %R0, %R0, 8
+  OUT %R0
+  SHRI %R0, %R0, 8
+  OUT %R0
+  SHRI %R0, %R0, 8
+  OUT %R0
+
+  HLT
+in_input_data: ""
+in_output_format: ints
+in_log_level: INFO
+out_output: |
+  instructions: 26
+  ============
+  233168
+out_compiled: |-
+  {
+    "start": 0,
+    "program": [
+      [
+        7,
+        0,
+        0,
+        0
+      ],
+      [
+        7,
+        1,
+        1,
+        1
+      ],
+      [
+        7,
+        2,
+        2,
+        2
+      ],
+      [
+        2,
+        2,
+        2,
+        1000
+      ],
+      [
+        18,
+        1,
+        2,
+        8
+      ],
+      [
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        2,
+        1,
+        1,
+        5
+      ],
+      [
+        13,
+        0,
+        0,
+        4
+      ],
+      [
+        7,
+        1,
+        1,
+        1
+      ],
+      [
+        18,
+        1,
+        2,
+        13
+      ],
+      [
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        2,
+        1,
+        1,
+        3
+      ],
+      [
+        13,
+        0,
+        0,
+        9
+      ],
+      [
+        7,
+        1,
+        1,
+        1
+      ],
+      [
+        18,
+        1,
+        2,
+        18
+      ],
+      [
+        3,
+        0,
+        0,
+        1
+      ],
+      [
+        2,
+        1,
+        1,
+        15
+      ],
+      [
+        13,
+        0,
+        0,
+        14
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        8
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        8
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        8
+      ],
+      [
+        12,
+        0
+      ],
+      [
+        0
+      ]
+    ]
+  }
+out_log: |-
+  INFO	machine:exec_program	Output: 233168

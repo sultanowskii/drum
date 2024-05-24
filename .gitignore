@@ -6,6 +6,8 @@ __pycache__/
 .venv/
 venv/
 .mypy_cache/
+.pytest_cache/
+__actual/
 
 *.json
 *.drc

@@ -5,4 +5,8 @@ flake8-print
 flake8-quotes
 flake8-commas
 flake8-annotations
+
 mypy
+
+pytest
+pytest-golden

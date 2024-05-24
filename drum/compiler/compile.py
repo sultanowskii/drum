@@ -21,7 +21,11 @@ def run(src_file: str, output_file: str) -> Error:
             return f'lexer error: {token.value}'
 
     translator = Translator(tokens)
-    exe, error = translator.translate()
+    translation_result, error = translator.translate()
+
+    exe = translation_result.exe
+
+    print(f'instructions: {translation_result.instruction_count}')
 
     if error is not None:
         return f'translator error: {error}'
