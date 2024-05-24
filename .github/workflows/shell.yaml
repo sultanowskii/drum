@@ -1,0 +1,24 @@
+name: Shell CI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/*"
+      - "**/*.sh"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/*"
+      - "**/*.sh"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Run ShellCheck
+        uses: azohra/shell-linter@latest
