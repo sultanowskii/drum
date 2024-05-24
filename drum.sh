@@ -25,7 +25,7 @@ fi
 COMPILED_FILE="${SRC_FILE}c"
 
 # run compiler
-./drumc.py $SRC_FILE $COMPILED_FILE
+./drumc.py "$SRC_FILE" "$COMPILED_FILE"
 
 # run machine
-./drumr.py $COMPILED_FILE $INPUT_FILE $MAHCINE_ADDITIONAL_ARGS
+./drumr.py "$COMPILED_FILE" "$INPUT_FILE" "$MAHCINE_ADDITIONAL_ARGS"
