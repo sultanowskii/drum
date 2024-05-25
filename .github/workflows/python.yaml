@@ -38,9 +38,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests and collect coverage
+      - name: Run tests
         run: |
-          pytest drum/
+          python -m pytest -vvv drum/
 
   lint:
     runs-on: ubuntu-latest

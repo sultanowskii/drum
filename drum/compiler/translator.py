@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional
 
 from drum.common.arch import (
     START_LABEL,
@@ -76,8 +76,12 @@ class Translator:
         self.tokens = tokens
         self.pos = 0
 
-    def next(self) -> Token:
+    def next(self) -> Optional[Token]:
         """Goes to the next token, returns current."""
+        if self.pos >= len(self.tokens):
+            self.position = len(self.tokens) + 1
+            return None
+
         value = self.tokens[self.pos]
         self.pos += 1
         return value
@@ -90,7 +94,7 @@ class Translator:
         """Checks if more tokens are available."""
         return self.pos < len(self.tokens)
 
-    def peek(self) -> Token:
+    def peek(self) -> Optional[Token]:
         """Returns the next token without consumption."""
         value = self.next()
         self.go_back()
@@ -99,6 +103,9 @@ class Translator:
     def translate_register_argument(self) -> Result[Argument]:
         """Translates register argument."""
         token = self.next()
+        if token is None:
+            return 0, 'register argumment expected, found end of tokens'
+
         if token.type != TokenType.ARGUMENT_REGISTER:
             return 0, f'register argument expected, {token.value} found instead ({token.type})'
 
@@ -113,6 +120,9 @@ class Translator:
     def translate_immediate_argument(self) -> Result[Argument]:
         """Translates immediate argument."""
         token = self.next()
+        if token is None:
+            return 0, 'immediate argumment expected, found end of tokens'
+
         match token.type:
             case TokenType.ARGUMENT_NUMBER:
                 try:
@@ -153,6 +163,9 @@ class Translator:
     def translate_command(self) -> Result[RawCommand]:
         """Translates command (op + args)."""
         token = self.next()
+        if token is None:
+            return [], 'instruction expected, found end of tokens'
+
         if token.type != TokenType.INSTRUCTION:
             return [], f'instruction expected, {token.value} found instead ({token.type})'
 
@@ -178,6 +191,9 @@ class Translator:
     def translate_string_literal(self) -> Result[list[DataWord]]:
         """Translates string literal."""
         token = self.next()
+        if token is None:
+            return [], 'string literal expected, found end of tokens'
+
         if token.type != TokenType.LITERAL_STRING:
             return [], f'string literal expected, {token.value} found instead ({token.type})'
 
@@ -186,6 +202,9 @@ class Translator:
     def translate_number_literal(self) -> Result[list[int]]:
         """Translates number literal."""
         token = self.next()
+        if token is None:
+            return [0], 'number liter expected, found end of tokens'
+
         if token.type != TokenType.LITERAL_NUMBER:
             return [0], f'number literal expected, {token.value} found instead ({token.type})'
 
@@ -194,10 +213,13 @@ class Translator:
         except ValueError:
             return [0], f'invalid number literal: {token.value}'
 
-    def get_label_value(self) -> str:
+    def translate_label(self) -> Result[str]:
         """Gets label value."""
         token = self.next()
-        return token.value
+        if token is None:
+            return '', 'label expected, found end of tokens'
+
+        return token.value, None
 
     def translate(self) -> Result[TranslationResult]:
         """Returns a program translated from a token list and a program start."""
@@ -206,12 +228,12 @@ class Translator:
         labels: dict[str, int] = dict()
         start = 0
 
-        token = self.peek()
-
         instruction_count = 0
 
         while self.pos < len(self.tokens):
             token = self.peek()
+            if token is None:
+                return DUMMY_TRANSLATION_RESULT, 'programming error: unexpected end of tokens'
 
             match token.type:
                 case TokenType.INSTRUCTION:
@@ -221,7 +243,9 @@ class Translator:
                     raw_program.append(command)
                     instruction_count += 1
                 case TokenType.LABEL:
-                    label = self.get_label_value()
+                    label, error = self.translate_label()
+                    if error is not None:
+                        return DUMMY_TRANSLATION_RESULT, error
 
                     if label in labels.keys():
                         return DUMMY_TRANSLATION_RESULT, f'label redefenition: {label}'

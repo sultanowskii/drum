@@ -1,3 +1,0 @@
-_start:
-ADDI %R0, %R1, 123
-ADD %R1, %R1, %R0

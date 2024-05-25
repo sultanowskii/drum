@@ -28,4 +28,6 @@ COMPILED_FILE="${SRC_FILE}c"
 ./drumc.py "$SRC_FILE" "$COMPILED_FILE"
 
 # run machine
-./drumr.py "$COMPILED_FILE" "$INPUT_FILE" "$MAHCINE_ADDITIONAL_ARGS"
+# ($MAHCINE_ADDITIONAL_ARGS without quotes is a hax for optional arguments)
+# shellcheck disable=SC2086
+./drumr.py "$COMPILED_FILE" "$INPUT_FILE" $MAHCINE_ADDITIONAL_ARGS 
