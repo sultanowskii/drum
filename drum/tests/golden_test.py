@@ -19,6 +19,18 @@ OUTPUT = 'output.txt'
 
 @pytest.mark.golden_test('golden/*.yaml')
 def test_compiler_and_machine(golden) -> None:
+    """
+    Golden tests that cover translator and machine.
+
+    Input:
+    - `in_source_code`: source code to compile and execute (`.dr`)
+    - `in_input_data`: data directed to stdin
+
+    Expected output:
+    - `out_compiled`: compiled code (`.drc`)
+    - `out_log`: execution log
+    - `out_output`: translation&execution ouput
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         source_code = os.path.join(tmpdir, SOURCE)
         input_data = os.path.join(tmpdir, INPUT)
