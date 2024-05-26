@@ -11,116 +11,110 @@ HELLO:
 EXCLAMATION:
 "!"
 
-
 _start:
-
-; zero = 0
-XOR %R0, %R0, %R0
-; newline = '\n'
-XOR %R1, %R1, %R1
-ADDI %R1, %R1, 10
-; sptr = &QUESTION
-XOR %R2, %R2, %R2
-ADDI %R2, %R2, QUESTION
+    ; zero = 0
+    XOR %R0, %R0, %R0
+    ; newline = '\n'
+    XOR %R1, %R1, %R1
+    ADDI %R1, %R1, 10
+    ; sptr = &QUESTION
+    XOR %R2, %R2, %R2
+    ADDI %R2, %R2, QUESTION
 
 ; while (sym != '\0')
 LOOP0:
-; sym = *sptr
-LD %R3, %R2
+    ; sym = *sptr
+    LD %R3, %R2
 
-; if sym == 0 -> break
-BEQ %R3, %R0, LOOP0_END
+    ; if sym == 0 -> break
+    BEQ %R3, %R0, LOOP0_END
 
-OUT %R3
+    OUT %R3
 
-; sptr++
-ADDI %R2, %R2, 1
+    ; sptr++
+    ADDI %R2, %R2, 1
 
-BEQ %R0, %R0, LOOP0
-
+    BEQ %R0, %R0, LOOP0
 LOOP0_END:
 
-OUT %R1
+    OUT %R1
 
-
-; nameptr = &NAME
-XOR %R2, %R2, %R2
-ADDI %R2, %R2, NAME
-; sym = 1
-XOR %R3, %R3, %R3
-ADDI %R3, %R3, 1
+; read name
+    ; nameptr = &NAME
+    XOR %R2, %R2, %R2
+    ADDI %R2, %R2, NAME
+    ; sym = 1
+    XOR %R3, %R3, %R3
+    ADDI %R3, %R3, 1
 
 ; while (sym != '\0' && sym != '\n')
 LOOP1:
-; sym = getc()
-IN %R3
+    ; sym = getc()
+    IN %R3
 
-; if sym == '\0' || sym == '\n' -> break
-BEQ %R3, %R0, LOOP1_END
-BEQ %R3, %R1, LOOP1_END
+    ; if sym == '\0' || sym == '\n' -> break
+    BEQ %R3, %R0, LOOP1_END
+    BEQ %R3, %R1, LOOP1_END
 
-; *nameptr = sym
-ST %R3, %R2
+    ; *nameptr = sym
+    ST %R3, %R2
 
-; nameptr++
-ADDI %R2, %R2, 1
+    ; nameptr++
+    ADDI %R2, %R2, 1
 
-BEQ %R0, %R0, LOOP1
-
+    BEQ %R0, %R0, LOOP1
 LOOP1_END:
-; name[n] = 0
-ST %R0, %R2
+    ; name[n] = 0
+    ST %R0, %R2
 
-; sptr = &HELLO
-XOR %R2, %R2, %R2
-ADDI %R2, %R2, HELLO
+; print(hello)
+    ; sptr = &HELLO
+    XOR %R2, %R2, %R2
+    ADDI %R2, %R2, HELLO
 
 ; while (sym != '\0')
 LOOP2:
-; sym = *sptr
-LD %R3, %R2
+    ; sym = *sptr
+    LD %R3, %R2
 
-; if sym == 0 -> break
-BEQ %R3, %R0, LOOP2_END
+    ; if sym == 0 -> break
+    BEQ %R3, %R0, LOOP2_END
 
-OUT %R3
+    OUT %R3
 
-; sptr++
-ADDI %R2, %R2, 1
+    ; sptr++
+    ADDI %R2, %R2, 1
 
-BEQ %R0, %R0, LOOP2
-
+    BEQ %R0, %R0, LOOP2
 LOOP2_END:
 
-
 ; print(name)
-XOR %R2, %R2, %R2
-ADDI %R2, %R2, NAME
+    XOR %R2, %R2, %R2
+    ADDI %R2, %R2, NAME
 
 ; while (sym != '\0')
 LOOP3:
-; sym = *sptr
-LD %R3, %R2
+    ; sym = *sptr
+    LD %R3, %R2
 
-; if sym == 0 -> break
-BEQ %R3, %R0, LOOP3_END
+    ; if sym == 0 -> break
+    BEQ %R3, %R0, LOOP3_END
 
-OUT %R3
+    OUT %R3
 
-; sptr++
-ADDI %R2, %R2, 1
+    ; sptr++
+    ADDI %R2, %R2, 1
 
-BEQ %R0, %R0, LOOP3
-
+    BEQ %R0, %R0, LOOP3
 LOOP3_END:
 
 ; print('!')
-XOR %R2, %R2, %R2
-ADDI %R2, %R2, EXCLAMATION
-LD %R3, %R2
-OUT %R3
+    XOR %R2, %R2, %R2
+    ADDI %R2, %R2, EXCLAMATION
+    LD %R3, %R2
+    OUT %R3
 
-HLT
+    HLT
 
 NAME:
 ""

@@ -278,6 +278,7 @@ options:
 - [cat](drum/tests/golden/cat.yaml) - Программа, схожая по своей сути с утилитой `cat`: печатает данные, поданные на вход.
 - [hello_user_name](drum/tests/golden/hello_user_name.yaml) - Программа, спрашивающая имя пользователя и после здоровающаяся с ним.
 - [prob1](drum/tests/golden/prob1.yaml) - Задача №1 в Project Euler
+- [guess](drum/tests/golden/guess.yaml) - Угадай число с одной попытки (7)
 
 Golden-тесты работают на основе `pytest` и `pytest-golden`.
 
@@ -576,8 +577,9 @@ $
 ### Статистика
 
 ```text
-| Султанов Артур Радикович | cat | 10 | 360 | 8 | 49 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | cat | 11 | 360 | 8 | 49 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
 | Султанов Артур Радикович | hello | 14 | 736 | 9 | 70 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
 | Султанов Артур Радикович | hello_user_name | 58 | 2519 | 41 | 207 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
 | Султанов Артур Радикович | prob1 | 33 | 1201 | 26 | 2420 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | guess | 50 | 4045 | 30 | 286 | - | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
 ```
