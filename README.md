@@ -372,29 +372,27 @@ jobs:
 ```bash
 $ cat examples/cat.dr
 _start:
-
-; zero = 0
-XOR %R0, %R0, %R0
-; sym = 1
-XOR %R1, %R1, %R1
-ADDI %R1, %R1, 1
+    ; zero = 0
+    XOR %R0, %R0, %R0
+    ; sym = 1
+    XOR %R1, %R1, %R1
+    ADDI %R1, %R1, 1
 
 ; while sym != 0
 LOOP:
-; sym = getc()
-IN %R1
+    ; sym = getc()
+    IN %R1
 
-; if sym == 0: break
-BEQ %R1, %R0, LOOP_END
+    ; if sym == 0: break
+    BEQ %R1, %R0, LOOP_END
 
-; putc(sym)
-OUT %R1
+    ; putc(sym)
+    OUT %R1
 
-BEQ %R0, %R0, LOOP
-
+    BEQ %R0, %R0, LOOP
 LOOP_END:
 
-HLT
+    HLT
 $ cat text.txt
 Lorem ipsum 
 dolor sit amet
