@@ -200,4 +200,5 @@ out_compiled: |-
     ]
   }
 out_log: |-
+  INFO	machine:exec_program	2420 instructions executed
   INFO	machine:exec_program	Output: 233168

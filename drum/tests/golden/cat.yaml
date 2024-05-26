@@ -129,4 +129,5 @@ out_log: |-
   DEBUG	machine:exec_program	IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  63 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
   DEBUG	machine:exec_program	IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
   DEBUG	machine:exec_program	IP=  7 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 HLT
+  INFO	machine:exec_program	49 instructions executed
   INFO	machine:exec_program	Output: where am I?

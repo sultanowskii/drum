@@ -204,4 +204,5 @@ out_log: |-
   DEBUG	machine:exec_program	IP= 17 ADDR= 12 MEM=    33 R0=   0 R1=  13 R2=  33 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 LD %R2, %R1
   DEBUG	machine:exec_program	IP= 18 ADDR= 13 MEM=     0 R0=   0 R1=  13 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R2, %R0, 22
   DEBUG	machine:exec_program	IP= 22 ADDR= 13 MEM=     0 R0=   0 R1=  13 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 HLT
+  INFO	machine:exec_program	70 instructions executed
   INFO	machine:exec_program	Output: Hello, world!

@@ -211,23 +211,23 @@ class ControlUnit:
     program: Program
     # Instruction pointer / program counter
     instruction_pointer: int
-    # Inner tick (relative "time" measurement)
-    _tick: int
+    # Inner executed instruction counter
+    _counter: int
 
     def __init__(self, data_path: DataPath, program: Program, start_addr: int = 0) -> None:
         self.data_path = data_path
         self.program = program
         self.instruction_pointer = start_addr
-        self._tick = 0
+        self._counter = 0
 
-    def tick(self) -> int:
-        """Gets current tick value."""
-        return self._tick
+    def counter(self) -> int:
+        """Gets current counter value."""
+        return self._counter
 
-    def tick_inc(self) -> int:
+    def counter_inc(self) -> int:
         """Increments tick value."""
-        tmp = self._tick
-        self._tick += 1
+        tmp = self._counter
+        self._counter += 1
         return tmp
 
     def set_instruction_pointer(self, new: int | None = None) -> None:
@@ -256,10 +256,8 @@ class ControlUnit:
             return err
 
         self.data_path.signal_latch_alu_result(op, left, right)
-        self.tick_inc()
 
         self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
-        self.tick_inc()
 
         return None
 
@@ -275,10 +273,8 @@ class ControlUnit:
 
         right = raw_args[2]
         self.data_path.signal_latch_alu_result(op, left, right)
-        self.tick_inc()
 
         self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
-        self.tick_inc()
 
         return None
 
@@ -313,16 +309,12 @@ class ControlUnit:
         match op:
             case Op.LD:
                 self.data_path.signal_latch_data_address(reg2)
-                self.tick_inc()
 
                 self.data_path.signal_latch_register(reg1, SelRegValueSource.MEM)
-                self.tick_inc()
             case Op.ST:
                 self.data_path.signal_latch_data_address(reg2)
-                self.tick_inc()
 
                 self.data_path.signal_latch_mem_wr(reg1)
-                self.tick_inc()
             case _:
                 return 'programming error: no match in execute_memory_op()'
 
@@ -339,10 +331,8 @@ class ControlUnit:
         match op:
             case Op.IN:
                 self.data_path.signal_latch_register(reg, SelRegValueSource.INPUT)
-                self.tick_inc()
             case Op.OUT:
                 self.data_path.signal_output(reg)
-                self.tick_inc()
             case _:
                 return 'programming error: no match in execute_io_op()'
 
@@ -363,7 +353,6 @@ class ControlUnit:
         addr = raw_args[2]
 
         self.data_path.signal_latch_alu_result(op, left, right)
-        self.tick_inc()
 
         if self.data_path.truth():
             self.set_instruction_pointer(addr)
@@ -400,7 +389,6 @@ class ControlUnit:
         elif op in BRANCH_OPS:
             execute = self.execute_branch_op
         elif op == HALT_OP:
-            self.tick_inc()
             return False
         else:
             logger.fatal('programming error: unexpected valid op')
@@ -410,6 +398,8 @@ class ControlUnit:
         if err is not None:
             logger.error(err)
             return False
+
+        self.counter_inc()
 
         return True
 
@@ -447,6 +437,8 @@ def exec_program(
 
     while control_unit.decode_and_execute():
         logger.debug(control_unit.get_state_string())
+
+    logger.info(f'{control_unit.counter()} instructions executed')
 
     output_data = []
     while not control_unit.data_path.output_buffer.empty():

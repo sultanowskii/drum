@@ -649,5 +649,6 @@ out_log: |-
   DEBUG	machine:exec_program	IP= 68 ADDR= 27 MEM=    33 R0=   0 R1=  10 R2=  27 R3=  33 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R3
   DEBUG	machine:signal_output	sent to output: 33 ('!')
   DEBUG	machine:exec_program	IP= 69 ADDR= 27 MEM=    33 R0=   0 R1=  10 R2=  27 R3=  33 R4=   0 R5=   0 R6=   0 R7=   0 HLT
+  INFO	machine:exec_program	207 instructions executed
   INFO	machine:exec_program	Output: What is your name?
   Hello, Alice!

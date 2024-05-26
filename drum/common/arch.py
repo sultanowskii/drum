@@ -82,7 +82,7 @@ class OpDef:
     code: int
 
 
-_op_iota = Iota()
+_op_iota = Iota(0)
 
 
 class Op(Enum):
