@@ -16,7 +16,7 @@ from drum.common.arch import (
     Register,
     Word,
 )
-from drum.machine.fmt import fmt_instruction
+from drum.common.fmt import fmt_instruction
 from drum.machine.io import OutputFormat
 from drum.util.error import Error
 

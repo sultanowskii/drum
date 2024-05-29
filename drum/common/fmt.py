@@ -72,3 +72,8 @@ def fmt_instruction(raw: Command) -> Result[str]:
         s += f' {", ".join(formatted_args)}'
 
     return s, None
+
+
+def fmt_const(const: list[int]) -> Result[str]:
+    """Returns a formatted cosnt."""
+    return f'Const value: {const[0]}', None

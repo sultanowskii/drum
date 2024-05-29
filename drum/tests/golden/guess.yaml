@@ -75,525 +75,966 @@ out_compiled: |-
   {
     "start": 117,
     "program": [
-      [
-        7
-      ],
-      [
-        69
-      ],
-      [
-        110
-      ],
-      [
-        116
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        32
-      ],
-      [
-        111
-      ],
-      [
-        110
-      ],
-      [
-        101
-      ],
-      [
-        32
-      ],
-      [
-        100
-      ],
-      [
-        105
-      ],
-      [
-        103
-      ],
-      [
-        105
-      ],
-      [
-        116
-      ],
-      [
-        58
-      ],
-      [
-        32
-      ],
-      [
-        91
-      ],
-      [
-        48
-      ],
-      [
-        45
-      ],
-      [
-        57
-      ],
-      [
-        93
-      ],
-      [
-        58
-      ],
-      [
-        32
-      ],
-      [
-        0
-      ],
-      [
-        89
-      ],
-      [
-        101
-      ],
-      [
-        115
-      ],
-      [
-        33
-      ],
-      [
-        32
-      ],
-      [
-        84
-      ],
-      [
-        104
-      ],
-      [
-        97
-      ],
-      [
-        116
-      ],
-      [
-        39
-      ],
-      [
-        115
-      ],
-      [
-        32
-      ],
-      [
-        116
-      ],
-      [
-        104
-      ],
-      [
-        101
-      ],
-      [
-        32
-      ],
-      [
-        108
-      ],
-      [
-        117
-      ],
-      [
-        99
-      ],
-      [
-        107
-      ],
-      [
-        121
-      ],
-      [
-        32
-      ],
-      [
-        110
-      ],
-      [
-        117
-      ],
-      [
-        109
-      ],
-      [
-        98
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        33
-      ],
-      [
-        0
-      ],
-      [
-        78
-      ],
-      [
-        111
-      ],
-      [
-        44
-      ],
-      [
-        32
-      ],
-      [
-        116
-      ],
-      [
-        104
-      ],
-      [
-        101
-      ],
-      [
-        32
-      ],
-      [
-        108
-      ],
-      [
-        117
-      ],
-      [
-        99
-      ],
-      [
-        107
-      ],
-      [
-        121
-      ],
-      [
-        32
-      ],
-      [
-        110
-      ],
-      [
-        117
-      ],
-      [
-        109
-      ],
-      [
-        98
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        32
-      ],
-      [
-        105
-      ],
-      [
-        115
-      ],
-      [
-        32
-      ],
-      [
-        108
-      ],
-      [
-        111
-      ],
-      [
-        119
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        0
-      ],
-      [
-        78
-      ],
-      [
-        111
-      ],
-      [
-        44
-      ],
-      [
-        32
-      ],
-      [
-        116
-      ],
-      [
-        104
-      ],
-      [
-        101
-      ],
-      [
-        32
-      ],
-      [
-        108
-      ],
-      [
-        117
-      ],
-      [
-        99
-      ],
-      [
-        107
-      ],
-      [
-        121
-      ],
-      [
-        32
-      ],
-      [
-        110
-      ],
-      [
-        117
-      ],
-      [
-        109
-      ],
-      [
-        98
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        32
-      ],
-      [
-        105
-      ],
-      [
-        115
-      ],
-      [
-        32
-      ],
-      [
-        104
-      ],
-      [
-        105
-      ],
-      [
-        103
-      ],
-      [
-        104
-      ],
-      [
-        101
-      ],
-      [
-        114
-      ],
-      [
-        0
-      ],
-      [
-        7,
-        0,
-        0,
-        0
-      ],
-      [
-        7,
-        1,
-        1,
-        1
-      ],
-      [
-        2,
-        1,
-        1,
-        1
-      ],
-      [
-        10,
-        2,
-        1
-      ],
-      [
-        13,
-        2,
-        0,
-        125
-      ],
-      [
-        12,
-        2
-      ],
-      [
-        2,
-        1,
-        1,
-        1
-      ],
-      [
-        13,
-        0,
-        0,
-        120
-      ],
-      [
-        11,
-        2
-      ],
-      [
-        4,
-        2,
-        2,
-        48
-      ],
-      [
-        7,
-        3,
-        3,
-        3
-      ],
-      [
-        2,
-        3,
-        3,
-        0
-      ],
-      [
-        10,
-        3,
-        3
-      ],
-      [
-        15,
-        2,
-        3,
-        135
-      ],
-      [
-        17,
-        2,
-        3,
-        138
-      ],
-      [
-        7,
-        1,
-        1,
-        1
-      ],
-      [
-        2,
-        1,
-        1,
-        26
-      ],
-      [
-        13,
-        0,
-        0,
-        141
-      ],
-      [
-        7,
-        1,
-        1,
-        1
-      ],
-      [
-        2,
-        1,
-        1,
-        86
-      ],
-      [
-        13,
-        0,
-        0,
-        141
-      ],
-      [
-        7,
-        1,
-        1,
-        1
-      ],
-      [
-        2,
-        1,
-        1,
-        56
-      ],
-      [
-        13,
-        0,
-        0,
-        141
-      ],
-      [
-        10,
-        2,
-        1
-      ],
-      [
-        13,
-        2,
-        0,
-        146
-      ],
-      [
-        12,
-        2
-      ],
-      [
-        2,
-        1,
-        1,
-        1
-      ],
-      [
-        13,
-        0,
-        0,
-        141
-      ],
-      [
-        0
-      ]
+      {
+        "raw": [
+          7
+        ],
+        "formatted": "Const value: 7"
+      },
+      {
+        "raw": [
+          69
+        ],
+        "formatted": "Const value: 69"
+      },
+      {
+        "raw": [
+          110
+        ],
+        "formatted": "Const value: 110"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          110
+        ],
+        "formatted": "Const value: 110"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          100
+        ],
+        "formatted": "Const value: 100"
+      },
+      {
+        "raw": [
+          105
+        ],
+        "formatted": "Const value: 105"
+      },
+      {
+        "raw": [
+          103
+        ],
+        "formatted": "Const value: 103"
+      },
+      {
+        "raw": [
+          105
+        ],
+        "formatted": "Const value: 105"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          58
+        ],
+        "formatted": "Const value: 58"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          91
+        ],
+        "formatted": "Const value: 91"
+      },
+      {
+        "raw": [
+          48
+        ],
+        "formatted": "Const value: 48"
+      },
+      {
+        "raw": [
+          45
+        ],
+        "formatted": "Const value: 45"
+      },
+      {
+        "raw": [
+          57
+        ],
+        "formatted": "Const value: 57"
+      },
+      {
+        "raw": [
+          93
+        ],
+        "formatted": "Const value: 93"
+      },
+      {
+        "raw": [
+          58
+        ],
+        "formatted": "Const value: 58"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      },
+      {
+        "raw": [
+          89
+        ],
+        "formatted": "Const value: 89"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          115
+        ],
+        "formatted": "Const value: 115"
+      },
+      {
+        "raw": [
+          33
+        ],
+        "formatted": "Const value: 33"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          84
+        ],
+        "formatted": "Const value: 84"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          97
+        ],
+        "formatted": "Const value: 97"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          39
+        ],
+        "formatted": "Const value: 39"
+      },
+      {
+        "raw": [
+          115
+        ],
+        "formatted": "Const value: 115"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          99
+        ],
+        "formatted": "Const value: 99"
+      },
+      {
+        "raw": [
+          107
+        ],
+        "formatted": "Const value: 107"
+      },
+      {
+        "raw": [
+          121
+        ],
+        "formatted": "Const value: 121"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          110
+        ],
+        "formatted": "Const value: 110"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          109
+        ],
+        "formatted": "Const value: 109"
+      },
+      {
+        "raw": [
+          98
+        ],
+        "formatted": "Const value: 98"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          33
+        ],
+        "formatted": "Const value: 33"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      },
+      {
+        "raw": [
+          78
+        ],
+        "formatted": "Const value: 78"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          44
+        ],
+        "formatted": "Const value: 44"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          99
+        ],
+        "formatted": "Const value: 99"
+      },
+      {
+        "raw": [
+          107
+        ],
+        "formatted": "Const value: 107"
+      },
+      {
+        "raw": [
+          121
+        ],
+        "formatted": "Const value: 121"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          110
+        ],
+        "formatted": "Const value: 110"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          109
+        ],
+        "formatted": "Const value: 109"
+      },
+      {
+        "raw": [
+          98
+        ],
+        "formatted": "Const value: 98"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          105
+        ],
+        "formatted": "Const value: 105"
+      },
+      {
+        "raw": [
+          115
+        ],
+        "formatted": "Const value: 115"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          119
+        ],
+        "formatted": "Const value: 119"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      },
+      {
+        "raw": [
+          78
+        ],
+        "formatted": "Const value: 78"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          44
+        ],
+        "formatted": "Const value: 44"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          116
+        ],
+        "formatted": "Const value: 116"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          99
+        ],
+        "formatted": "Const value: 99"
+      },
+      {
+        "raw": [
+          107
+        ],
+        "formatted": "Const value: 107"
+      },
+      {
+        "raw": [
+          121
+        ],
+        "formatted": "Const value: 121"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          110
+        ],
+        "formatted": "Const value: 110"
+      },
+      {
+        "raw": [
+          117
+        ],
+        "formatted": "Const value: 117"
+      },
+      {
+        "raw": [
+          109
+        ],
+        "formatted": "Const value: 109"
+      },
+      {
+        "raw": [
+          98
+        ],
+        "formatted": "Const value: 98"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          105
+        ],
+        "formatted": "Const value: 105"
+      },
+      {
+        "raw": [
+          115
+        ],
+        "formatted": "Const value: 115"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          105
+        ],
+        "formatted": "Const value: 105"
+      },
+      {
+        "raw": [
+          103
+        ],
+        "formatted": "Const value: 103"
+      },
+      {
+        "raw": [
+          104
+        ],
+        "formatted": "Const value: 104"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      },
+      {
+        "raw": [
+          7,
+          0,
+          0,
+          0
+        ],
+        "formatted": "XOR %R0, %R0, %R0"
+      },
+      {
+        "raw": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "formatted": "XOR %R1, %R1, %R1"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "formatted": "ADDI %R1, %R1, 1"
+      },
+      {
+        "raw": [
+          10,
+          2,
+          1
+        ],
+        "formatted": "LD %R2, %R1"
+      },
+      {
+        "raw": [
+          13,
+          2,
+          0,
+          125
+        ],
+        "formatted": "BEQ %R2, %R0, 125"
+      },
+      {
+        "raw": [
+          12,
+          2
+        ],
+        "formatted": "OUT %R2"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "formatted": "ADDI %R1, %R1, 1"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          120
+        ],
+        "formatted": "BEQ %R0, %R0, 120"
+      },
+      {
+        "raw": [
+          11,
+          2
+        ],
+        "formatted": "IN %R2"
+      },
+      {
+        "raw": [
+          4,
+          2,
+          2,
+          48
+        ],
+        "formatted": "SUBI %R2, %R2, 48"
+      },
+      {
+        "raw": [
+          7,
+          3,
+          3,
+          3
+        ],
+        "formatted": "XOR %R3, %R3, %R3"
+      },
+      {
+        "raw": [
+          2,
+          3,
+          3,
+          0
+        ],
+        "formatted": "ADDI %R3, %R3, 0"
+      },
+      {
+        "raw": [
+          10,
+          3,
+          3
+        ],
+        "formatted": "LD %R3, %R3"
+      },
+      {
+        "raw": [
+          15,
+          2,
+          3,
+          135
+        ],
+        "formatted": "BLT %R2, %R3, 135"
+      },
+      {
+        "raw": [
+          17,
+          2,
+          3,
+          138
+        ],
+        "formatted": "BGT %R2, %R3, 138"
+      },
+      {
+        "raw": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "formatted": "XOR %R1, %R1, %R1"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          26
+        ],
+        "formatted": "ADDI %R1, %R1, 26"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          141
+        ],
+        "formatted": "BEQ %R0, %R0, 141"
+      },
+      {
+        "raw": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "formatted": "XOR %R1, %R1, %R1"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          86
+        ],
+        "formatted": "ADDI %R1, %R1, 86"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          141
+        ],
+        "formatted": "BEQ %R0, %R0, 141"
+      },
+      {
+        "raw": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "formatted": "XOR %R1, %R1, %R1"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          56
+        ],
+        "formatted": "ADDI %R1, %R1, 56"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          141
+        ],
+        "formatted": "BEQ %R0, %R0, 141"
+      },
+      {
+        "raw": [
+          10,
+          2,
+          1
+        ],
+        "formatted": "LD %R2, %R1"
+      },
+      {
+        "raw": [
+          13,
+          2,
+          0,
+          146
+        ],
+        "formatted": "BEQ %R2, %R0, 146"
+      },
+      {
+        "raw": [
+          12,
+          2
+        ],
+        "formatted": "OUT %R2"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "formatted": "ADDI %R1, %R1, 1"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          141
+        ],
+        "formatted": "BEQ %R0, %R0, 141"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      }
     ]
   }
 out_log: |-

@@ -27,96 +27,165 @@ out_compiled: |-
   {
     "start": 14,
     "program": [
-      [
-        72
-      ],
-      [
-        101
-      ],
-      [
-        108
-      ],
-      [
-        108
-      ],
-      [
-        111
-      ],
-      [
-        44
-      ],
-      [
-        32
-      ],
-      [
-        119
-      ],
-      [
-        111
-      ],
-      [
-        114
-      ],
-      [
-        108
-      ],
-      [
-        100
-      ],
-      [
-        33
-      ],
-      [
-        0
-      ],
-      [
-        7,
-        0,
-        0,
-        0
-      ],
-      [
-        7,
-        1,
-        1,
-        1
-      ],
-      [
-        2,
-        1,
-        1,
-        0
-      ],
-      [
-        10,
-        2,
-        1
-      ],
-      [
-        13,
-        2,
-        0,
-        22
-      ],
-      [
-        12,
-        2
-      ],
-      [
-        2,
-        1,
-        1,
-        1
-      ],
-      [
-        13,
-        0,
-        0,
-        17
-      ],
-      [
-        0
-      ]
+      {
+        "raw": [
+          72
+        ],
+        "formatted": "Const value: 72"
+      },
+      {
+        "raw": [
+          101
+        ],
+        "formatted": "Const value: 101"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          44
+        ],
+        "formatted": "Const value: 44"
+      },
+      {
+        "raw": [
+          32
+        ],
+        "formatted": "Const value: 32"
+      },
+      {
+        "raw": [
+          119
+        ],
+        "formatted": "Const value: 119"
+      },
+      {
+        "raw": [
+          111
+        ],
+        "formatted": "Const value: 111"
+      },
+      {
+        "raw": [
+          114
+        ],
+        "formatted": "Const value: 114"
+      },
+      {
+        "raw": [
+          108
+        ],
+        "formatted": "Const value: 108"
+      },
+      {
+        "raw": [
+          100
+        ],
+        "formatted": "Const value: 100"
+      },
+      {
+        "raw": [
+          33
+        ],
+        "formatted": "Const value: 33"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      },
+      {
+        "raw": [
+          7,
+          0,
+          0,
+          0
+        ],
+        "formatted": "XOR %R0, %R0, %R0"
+      },
+      {
+        "raw": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "formatted": "XOR %R1, %R1, %R1"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          0
+        ],
+        "formatted": "ADDI %R1, %R1, 0"
+      },
+      {
+        "raw": [
+          10,
+          2,
+          1
+        ],
+        "formatted": "LD %R2, %R1"
+      },
+      {
+        "raw": [
+          13,
+          2,
+          0,
+          22
+        ],
+        "formatted": "BEQ %R2, %R0, 22"
+      },
+      {
+        "raw": [
+          12,
+          2
+        ],
+        "formatted": "OUT %R2"
+      },
+      {
+        "raw": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "formatted": "ADDI %R1, %R1, 1"
+      },
+      {
+        "raw": [
+          13,
+          0,
+          0,
+          17
+        ],
+        "formatted": "BEQ %R0, %R0, 17"
+      },
+      {
+        "raw": [
+          0
+        ],
+        "formatted": "Const value: 0"
+      }
     ]
   }
 out_log: |-
