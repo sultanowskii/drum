@@ -1,7 +1,6 @@
 
 
 from json import dumps, loads
-from typing import Any
 
 from drum.common.fmt import fmt_const, fmt_instruction
 from drum.util.io import read_from_file, write_to_file
@@ -12,10 +11,13 @@ def read_src(file: str) -> str:
     return read_from_file(file)
 
 
-def write_compiled(file: str, compiled: dict[str, Any]) -> None:
+def write_compiled(file: str, compiled: dict[str, int | list[list[int]]]) -> None:
     """Writes compiled (.drc) file."""
     start = compiled['start']
+    assert isinstance(start, int)
+
     program = compiled['program']
+    assert isinstance(program, list)
 
     formatted_program = []
     for word in program:
@@ -34,7 +36,7 @@ def write_compiled(file: str, compiled: dict[str, Any]) -> None:
     write_to_file(file, dumps(result, indent=2))
 
 
-def read_compiled(file: str) -> dict[str, Any]:
+def read_compiled(file: str) -> dict[str, int | list[list[int]]]:
     """Reads compiled (.drc) file."""
     raw_data = read_from_file(file)
     data = loads(raw_data)
