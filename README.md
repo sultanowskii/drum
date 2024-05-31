@@ -5,16 +5,10 @@
 **Вариант**:
 
 ```text
-alg -> asm | risc | neum | hw | instr | binary -> struct | stream | port | cstr | prob1 | cache
+asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1
 ```
 
 Без усложнения, упрощенный.
-
-**Итоговый вариант**:
-
-```text
-asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
-```
 
 ## Язык программирования
 
