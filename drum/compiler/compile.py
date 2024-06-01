@@ -30,12 +30,6 @@ def run(src_file: str, output_file: str) -> Error:
     if error is not None:
         return f'translator error: {error}'
 
-    write_compiled(
-        output_file,
-        dict(
-            start=exe.start,
-            program=exe.program,
-        ),
-    )
+    write_compiled(output_file, exe)
 
     return None

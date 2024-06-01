@@ -23,8 +23,8 @@ def run(
     exe = read_compiled(compiled_file)
     input_data = str_to_input_data(read_from_file(input_file))
 
-    program = exe['program']
-    start = exe['start']
+    program = exe.program
+    start = exe.start
 
     setup_logger('machine', logfile=logfile, log_level=log_level)
 

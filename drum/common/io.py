@@ -2,6 +2,7 @@
 
 from json import dumps, loads
 
+from drum.common.arch import Executable
 from drum.common.fmt import fmt_const, fmt_instruction
 from drum.util.io import read_from_file, write_to_file
 
@@ -11,13 +12,10 @@ def read_src(file: str) -> str:
     return read_from_file(file)
 
 
-def write_compiled(file: str, compiled: dict[str, int | list[list[int]]]) -> None:
+def write_compiled(file: str, exe: Executable) -> None:
     """Writes compiled (.drc) file."""
-    start = compiled['start']
-    assert isinstance(start, int)
-
-    program = compiled['program']
-    assert isinstance(program, list)
+    start = exe.start
+    program = exe.program
 
     formatted_program = []
     for word in program:
@@ -36,7 +34,7 @@ def write_compiled(file: str, compiled: dict[str, int | list[list[int]]]) -> Non
     write_to_file(file, dumps(result, indent=2))
 
 
-def read_compiled(file: str) -> dict[str, int | list[list[int]]]:
+def read_compiled(file: str) -> Executable:
     """Reads compiled (.drc) file."""
     raw_data = read_from_file(file)
     data = loads(raw_data)
@@ -48,7 +46,7 @@ def read_compiled(file: str) -> dict[str, int | list[list[int]]]:
     for word in program:
         simplified_program.append(word['raw'])
 
-    return dict(
-        start=start,
-        program=simplified_program,
+    return Executable(
+        start,
+        simplified_program,
     )
