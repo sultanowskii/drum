@@ -136,7 +136,6 @@ XOR %R0, %R0, %R0  ; preparing variables
 r0-r7 (регистры общего назначения)
 da (data_address, регистр, указывающий на место в памяти)
 ip (instruction_pointer, регистр, указывающий на инструкцию для исполнения)
-ar (alu_result, результат работы ALU)
 ```
 
 В распоряжении разработчика имеются 8 регистров общего назначения - сама машина их не использует, поэтому их можно использовать как угодно.
@@ -248,11 +247,11 @@ options:
 
 - `latch_data_address` - Записать в `data_address` значение из выбранного регистра (источник выбирается `sel_data_addr`)
 - `latch_mem_wr` - Записать в ячейку памяти по адресу `data_address` значение регистра (источник выбирается `sel_mem_wr_reg`)
-- `latch_alu_result` - Записать в `alu_result` значение операции АЛУ. Левый операнд - регистр (выбирается `sel_left`), правый либо immediate value (`imm_value`), либо регистр (выбирается `seg_right`). Операция АЛУ определяется управляющим сигналом `alu_ctl`. В truth будет записан 0 или 1 по неправде/правде утверждения для операций условного перехода
-`latch_rX` - (8) - записать в регистр X (выбирается `sel_reg`) значение, идущее из источника (либо stdin, либо память, либо `alu_result`, выбирается `sel_reg_src`)
-- `signal_output` - Вывести младший байт в stdout. Регистр для вывода выбирается `sel_out_reg`
+- `latch_rX` - (8) - записать в регистр X (выбирается `sel_reg`) значение, идущее из источника (либо stdin, либо память, либо результат АЛУ, выбирается `sel_reg_src`).
 
-`alu_result` обособлен для упрощения и уменьшения кол-ва управляющих сигналов для `latch_rX`.
+  Для АЛУ: Левый операнд - регистр (выбирается `sel_left`), правый либо значение (`imm_value`), либо регистр (выбирается `seg_right`). Операция АЛУ определяется управляющим сигналом `alu_ctl`. В zero будет записан результат по неправде/правде утверждения для операций условного перехода
+
+- `signal_output` - Вывести младший байт в stdout. Регистр для вывода выбирается `sel_out_reg`
 
 ### ControlUnit
 
@@ -397,146 +396,146 @@ Lorem ipsum
 dolor sit amet
 $ cat cat.log
 DEBUG	machine:exec_program	TICK=   0 IP=  0 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 XOR %R0, %R0, %R0
-DEBUG	machine:exec_program	TICK=   2 IP=  1 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 XOR %R1, %R1, %R1
-DEBUG	machine:exec_program	TICK=   4 IP=  2 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 ADDI %R1, %R1, 1
-DEBUG	machine:exec_program	TICK=   6 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=   1 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=   7 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=   8 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=   1 IP=  1 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 XOR %R1, %R1, %R1
+DEBUG	machine:exec_program	TICK=   2 IP=  2 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 ADDI %R1, %R1, 1
+DEBUG	machine:exec_program	TICK=   3 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=   1 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=   4 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=   5 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 76 ('L')
-DEBUG	machine:exec_program	TICK=   9 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  10 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  11 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  12 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=   6 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=   7 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  76 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=   8 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=   9 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 111 ('o')
-DEBUG	machine:exec_program	TICK=  13 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  14 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  15 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  16 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  10 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  11 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  12 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  13 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 114 ('r')
-DEBUG	machine:exec_program	TICK=  17 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  18 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  19 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  20 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  14 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  15 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  16 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  17 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 101 ('e')
-DEBUG	machine:exec_program	TICK=  21 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  22 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  23 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  24 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  18 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  19 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  20 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  21 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 109 ('m')
-DEBUG	machine:exec_program	TICK=  25 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  26 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  27 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  28 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  22 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  23 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  24 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  25 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 32 (' ')
-DEBUG	machine:exec_program	TICK=  29 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  30 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  31 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  32 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  26 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  27 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  28 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  29 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 105 ('i')
-DEBUG	machine:exec_program	TICK=  33 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  34 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  35 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  36 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  30 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  31 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  32 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  33 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 112 ('p')
-DEBUG	machine:exec_program	TICK=  37 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  38 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  39 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  40 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  34 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  35 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 112 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  36 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  37 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 115 ('s')
-DEBUG	machine:exec_program	TICK=  41 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  42 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  43 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  44 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  38 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  39 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  40 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  41 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 117 ('u')
-DEBUG	machine:exec_program	TICK=  45 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  46 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  47 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  48 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  42 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  43 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 117 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  44 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  45 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 109 ('m')
-DEBUG	machine:exec_program	TICK=  49 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  50 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  51 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  52 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  46 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  47 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  48 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  49 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 32 (' ')
-DEBUG	machine:exec_program	TICK=  53 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  54 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  55 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  56 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  50 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  51 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  52 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  53 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 10 ('\n')
-DEBUG	machine:exec_program	TICK=  57 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  58 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  59 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  60 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  54 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  55 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  10 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  56 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  57 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 100 ('d')
-DEBUG	machine:exec_program	TICK=  61 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  62 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  63 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  64 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  58 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  59 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 100 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  60 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  61 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 111 ('o')
-DEBUG	machine:exec_program	TICK=  65 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  66 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  67 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  68 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  62 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  63 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  64 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  65 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 108 ('l')
-DEBUG	machine:exec_program	TICK=  69 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  70 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  71 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  72 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  66 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  67 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 108 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  68 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  69 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 111 ('o')
-DEBUG	machine:exec_program	TICK=  73 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  74 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  75 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  76 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  70 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  71 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 111 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  72 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  73 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 114 ('r')
-DEBUG	machine:exec_program	TICK=  77 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  78 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  79 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  80 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  74 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  75 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 114 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  76 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  77 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 32 (' ')
-DEBUG	machine:exec_program	TICK=  81 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  82 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  83 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  84 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  78 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  79 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  80 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  81 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 115 ('s')
-DEBUG	machine:exec_program	TICK=  85 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  86 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  87 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  88 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  82 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  83 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 115 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  84 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  85 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 105 ('i')
-DEBUG	machine:exec_program	TICK=  89 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  90 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  91 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  92 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  86 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  87 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 105 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  88 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  89 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 116 ('t')
-DEBUG	machine:exec_program	TICK=  93 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  94 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  95 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK=  96 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  90 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  91 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  92 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  93 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 32 (' ')
-DEBUG	machine:exec_program	TICK=  97 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK=  98 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK=  99 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK= 100 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  94 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  95 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  32 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK=  96 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK=  97 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 97 ('a')
-DEBUG	machine:exec_program	TICK= 101 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK= 102 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK= 103 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK= 104 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK=  98 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK=  99 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1=  97 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK= 100 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK= 101 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 109 ('m')
-DEBUG	machine:exec_program	TICK= 105 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK= 106 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK= 107 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK= 108 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK= 102 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK= 103 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 109 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK= 104 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK= 105 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 101 ('e')
-DEBUG	machine:exec_program	TICK= 109 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK= 110 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK= 111 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK= 112 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
+DEBUG	machine:exec_program	TICK= 106 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK= 107 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 101 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK= 108 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK= 109 IP=  5 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 OUT %R1
 DEBUG	machine:signal_output	sent to output: 116 ('t')
-DEBUG	machine:exec_program	TICK= 113 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
-DEBUG	machine:exec_program	TICK= 114 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
-DEBUG	machine:exec_program	TICK= 115 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
-DEBUG	machine:exec_program	TICK= 116 IP=  7 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 HLT
+DEBUG	machine:exec_program	TICK= 110 IP=  6 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R0, %R0, 3
+DEBUG	machine:exec_program	TICK= 111 IP=  3 ADDR=  0 MEM=     7 R0=   0 R1= 116 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 IN %R1
+DEBUG	machine:exec_program	TICK= 112 IP=  4 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 BEQ %R1, %R0, 7
+DEBUG	machine:exec_program	TICK= 113 IP=  7 ADDR=  0 MEM=     7 R0=   0 R1=   0 R2=   0 R3=   0 R4=   0 R5=   0 R6=   0 R7=   0 HLT
 INFO	machine:exec_program	113 instructions executed
 INFO	machine:exec_program	Output: Lorem ipsum 
 dolor sit amet
@@ -571,9 +570,9 @@ $
 
 ```text
 | ФИО                      | <алг>           | <LoC> | <code байт> | <code инстр.> | <инстр.> | <такт.> | <вариант> |
-| Султанов Артур Радикович | cat             | 11    | 360         | 8             | 49       | 52      | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
-| Султанов Артур Радикович | hello           | 14    | 736         | 9             | 70       | 100     | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
-| Султанов Артур Радикович | hello_user_name | 58    | 2519        | 41            | 207      | 297     | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
-| Султанов Артур Радикович | prob1           | 33    | 1201        | 26            | 2420     | 3631    | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
-| Султанов Артур Радикович | guess           | 50    | 4045        | 30            | 286      | 405     | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | cat             | 11    | 360         | 8             | 49       | 49      | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | hello           | 14    | 736         | 9             | 70       | 84      | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | hello_user_name | 58    | 2519        | 41            | 207      | 247     | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | prob1           | 33    | 1201        | 26            | 2420     | 2420    | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
+| Султанов Артур Радикович | guess           | 50    | 4045        | 30            | 286      | 343     | asm | risc | neum | hw | instr | struct | stream | port | cstr | prob1 |
 ```

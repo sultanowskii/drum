@@ -1,7 +1,7 @@
 from enum import Enum
 from logging import getLogger
 from queue import Queue
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Optional
 
 from drum.common.arch import (
     BRANCH_OPS,
@@ -28,7 +28,7 @@ ImmediateValue = int
 
 class SelRegValueSource(Enum):
     """Select register value source."""
-    ALU_RESULT = 'ALU_RESULT'
+    ALU = 'ALU_RESULT'
     INPUT = 'INPUT'
     MEM = 'MEM'
 
@@ -49,8 +49,8 @@ class DataPath:
     memory_capacity: int
     # General register
     registers: dict[Register, Value]
-    # Truth flag (used for conditional branching)
-    _truth: bool
+    # Zero flag (used for conditional branching)
+    _zero: bool
 
     def __init__(
         self,
@@ -70,7 +70,7 @@ class DataPath:
             (r, 0)
             for r in Register
         ))
-        self._truth = False
+        self._zero = False
 
     def _reg_value(self, reg: Register) -> int:
         """Get value of register."""
@@ -102,9 +102,9 @@ class DataPath:
         """Send byte to input."""
         self.output_buffer.put(value)
 
-    def truth(self) -> bool:
-        """Get truth value."""
-        return self._truth
+    def zero(self) -> bool:
+        """Get zero value."""
+        return self._zero
 
     def signal_latch_data_address(self, sel: Register) -> None:
         """Latches data address (based on selector)."""
@@ -122,85 +122,69 @@ class DataPath:
         self.output_buffer.put(value)
         logger.debug(f'sent to output: {value} ({repr(chr(value))})')
 
-    def signal_latch_alu_result(
-        self,
-        alu_ctl: Op,
-        sel_left: Register,
-        sel_right_or_imm: Register | ImmediateValue,
-    ) -> None:
-        """
-        Latches ALU result.
-
-        Is calculated based on:
-        - operation (alu_ctl)
-        - left (register)
-        - right (register / immediate value)
-
-        If right is an immediate value, value is 'passed' through imm_value.
-        """
-        left_value = self._reg_value(sel_left)
-        right_value = self._reg_value_or_imm(sel_right_or_imm)
-        result = 0
-
-        match alu_ctl:
-            case Op.ADD | Op.ADDI:
-                result = left_value + right_value
-            case Op.SUB | Op.SUBI:
-                result = left_value - right_value
-            case Op.SHR | Op.SHRI:
-                result = left_value >> right_value
-            case Op.SHR | Op.SHRI:
-                result = left_value >> right_value
-            case Op.XOR | Op.XORI:
-                result = left_value ^ right_value
-            case Op.BEQ:
-                self._truth = left_value == right_value
-            case Op.BNE:
-                self._truth = left_value != right_value
-            case Op.BLT:
-                self._truth = left_value < right_value
-            case Op.BLE:
-                self._truth = left_value <= right_value
-            case Op.BGT:
-                self._truth = left_value > right_value
-            case Op.BGE:
-                self._truth = left_value >= right_value
-
-        self.alu_result = result
-
-    def _signal_latch_register_input(self, reg: Register) -> None:
-        """Latches register (byte value is taken from input)."""
-        value = self.input_buffer.get()
-        self._set_reg_value(reg, value)
-
-    def _signal_latch_register_mem(self, reg: Register) -> None:
-        """Latches register (value is taken from memory cell)."""
-        value = self._read_from_memory()
-        self._set_reg_value(reg, value)
-
-    def _signal_latch_register_alu(self, reg: Register) -> None:
-        """Latches register (value is taken from ALU result)."""
-        value = self.alu_result
-        self._set_reg_value(reg, value)
-
     def signal_latch_register(
         self,
-        sel_reg: Register,
-        sel_reg_value_src: SelRegValueSource,
+        sel_value_src: SelRegValueSource,
+        reg: Optional[Register] = None,
+        alu_ctl: Optional[Op] = None,
+        sel_left: Optional[Register] = None,
+        sel_right: Optional[Register | ImmediateValue] = None,
     ) -> None:
         """
         Latches register value.
 
         - register is chosen by sel_reg
         - source of value is chosen by sel_reg_value_src
+
+        ALU: value is calculated by ALU
+        MEM: value is taken from memory cell
+        INPUT: byte value is taken from input
         """
-        match sel_reg_value_src:
-            case SelRegValueSource.ALU_RESULT:
-                self._signal_latch_register_alu(sel_reg)
+        match sel_value_src:
+            case SelRegValueSource.ALU:
+                assert sel_left is not None
+                assert sel_right is not None
+                assert alu_ctl is not None
+
+                left_value = self._reg_value(sel_left)
+                right_value = self._reg_value_or_imm(sel_right)
+                result = 0
+
+                match alu_ctl:
+                    case Op.ADD | Op.ADDI:
+                        result = left_value + right_value
+                    case Op.SUB | Op.SUBI:
+                        result = left_value - right_value
+                    case Op.SHR | Op.SHRI:
+                        result = left_value >> right_value
+                    case Op.SHR | Op.SHRI:
+                        result = left_value >> right_value
+                    case Op.XOR | Op.XORI:
+                        result = left_value ^ right_value
+                    case Op.BEQ:
+                        self._zero = left_value == right_value
+                    case Op.BNE:
+                        self._zero = left_value != right_value
+                    case Op.BLT:
+                        self._zero = left_value < right_value
+                    case Op.BLE:
+                        self._zero = left_value <= right_value
+                    case Op.BGT:
+                        self._zero = left_value > right_value
+                    case Op.BGE:
+                        self._zero = left_value >= right_value
+
+                if alu_ctl not in BRANCH_OPS:
+                    assert reg is not None
+                    self._set_reg_value(reg, result)
             case SelRegValueSource.INPUT:
-                self._signal_latch_register_input(sel_reg)
+                assert reg is not None
+                value = self.input_buffer.get()
+                self._set_reg_value(reg, value)
             case SelRegValueSource.MEM:
-                self._signal_latch_register_mem(sel_reg)
+                assert reg is not None
+                value = self._read_from_memory()
+                self._set_reg_value(reg, value)
 
 
 class ControlUnit:
@@ -268,10 +252,13 @@ class ControlUnit:
         if err is not None:
             return err
 
-        self.data_path.signal_latch_alu_result(op, left, right)
-        self.tick_inc()
-
-        self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
+        self.data_path.signal_latch_register(
+            SelRegValueSource.ALU,
+            reg=destination_reg,
+            alu_ctl=op,
+            sel_left=left,
+            sel_right=right,
+        )
         self.tick_inc()
 
         return None
@@ -287,10 +274,13 @@ class ControlUnit:
             return err
 
         right = raw_args[2]
-        self.data_path.signal_latch_alu_result(op, left, right)
-        self.tick_inc()
-
-        self.data_path.signal_latch_register(destination_reg, SelRegValueSource.ALU_RESULT)
+        self.data_path.signal_latch_register(
+            SelRegValueSource.ALU,
+            reg=destination_reg,
+            alu_ctl=op,
+            sel_left=left,
+            sel_right=right,
+        )
         self.tick_inc()
 
         return None
@@ -328,7 +318,7 @@ class ControlUnit:
                 self.data_path.signal_latch_data_address(reg2)
                 self.tick_inc()
 
-                self.data_path.signal_latch_register(reg1, SelRegValueSource.MEM)
+                self.data_path.signal_latch_register(SelRegValueSource.MEM, reg1)
                 self.tick_inc()
             case Op.ST:
                 self.data_path.signal_latch_data_address(reg2)
@@ -351,7 +341,7 @@ class ControlUnit:
 
         match op:
             case Op.IN:
-                self.data_path.signal_latch_register(reg, SelRegValueSource.INPUT)
+                self.data_path.signal_latch_register(SelRegValueSource.INPUT, reg)
                 self.tick_inc()
             case Op.OUT:
                 self.data_path.signal_output(reg)
@@ -375,10 +365,15 @@ class ControlUnit:
 
         addr = raw_args[2]
 
-        self.data_path.signal_latch_alu_result(op, left, right)
+        self.data_path.signal_latch_register(
+            SelRegValueSource.ALU,
+            alu_ctl=op,
+            sel_left=left,
+            sel_right=right,
+        )
         self.tick_inc()
 
-        if self.data_path.truth():
+        if self.data_path.zero():
             self.set_instruction_pointer(addr)
             return None
 
